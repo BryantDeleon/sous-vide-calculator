@@ -1,0 +1,859 @@
+<!doctype html>
+<html lang="en" class="no-js"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sous Vide Time and Temperature Calculator</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Free sous vide calculator. Pick your food, thickness and doneness to get the exact water bath temperature, cook time and food-safety hold for steak, chicken, pork, fish, eggs and vegetables.">
+<link rel="canonical" href="https://bryantdeleon.github.io/sous-vide-calculator/">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta name="theme-color" content="#13392b">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://bryantdeleon.github.io/sous-vide-calculator/">
+<meta property="og:site_name" content="Sous Vide Calculator by OWKAR">
+<meta property="og:title" content="Sous Vide Time and Temperature Calculator">
+<meta property="og:description" content="Exact bath temperature and cook time for any cut, thickness and doneness. Built on published heating and food-safety tables.">
+<meta property="og:image" content="https://bryantdeleon.github.io/sous-vide-calculator/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&amp;family=Source+Sans+3:wght@400;600;700&amp;family=JetBrains+Mono:wght@500;700&amp;display=swap">
+<script type="application/ld+json">[{"@context":"https://schema.org","@type":"WebApplication","name":"Sous Vide Time and Temperature Calculator","url":"https://bryantdeleon.github.io/sous-vide-calculator/","applicationCategory":"UtilitiesApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Free sous vide calculator for bath temperature, cook time and food-safety hold by food, thickness and doneness.","publisher":{"@type":"Organization","name":"OWKAR","url":"https://owkar.com/"}},{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How long does it take to sous vide a 1-inch steak?","acceptedAnswer":{"@type":"Answer","text":"A 1-inch steak takes about 1 h 20 min to heat through at any temperature, and it can stay in the bath for up to 3 h 20 min before the texture softens. For medium-rare, set the bath to 131°F (55°C). A 2-inch steak needs about 3 h 35 min, because heating time grows with the square of the thickness."}},{"@type":"Question","name":"Is sous vide safe below USDA's recommended temperatures?","acceptedAnswer":{"@type":"Answer","text":"Yes, when the food is held at temperature long enough. Killing bacteria depends on both temperature and time. USDA's 165°F (74°C) for chicken kills Salmonella almost instantly, but chicken held at 140°F (60°C) for about 32 minutes reaches the same reduction. The calculator adds these hold times from USDA FSIS tables. Whole cuts of beef and lamb are contaminated mainly on the surface, so a sear makes them safe at lower temperatures."}},{"@type":"Question","name":"How long should I sous vide chicken breast?","acceptedAnswer":{"@type":"Answer","text":"For a 1-inch boneless breast at 145°F (63°C), cook 1 h 35 min to 3 h 35 min. That includes a safety hold so the center is fully pasteurized. Use 140°F (60°C) for the most tender result, or 150°F (66°C) for a more familiar texture."}},{"@type":"Question","name":"Can you overcook food with sous vide?","acceptedAnswer":{"@type":"Answer","text":"Not in terms of doneness, since food can't get hotter than the water. But texture changes with time. Steaks and chicken turn soft and mealy after several hours, and fish starts to break down after about 30 minutes past the minimum time. Each result shows a ready window so you know how long food can wait."}},{"@type":"Question","name":"Can I sous vide from frozen?","acceptedAnswer":{"@type":"Answer","text":"Yes. Put the frozen, sealed bag straight into the preheated bath and add about 50% to the heating time. The calculator does this when you choose \"From frozen\". Don't thaw food at room temperature first."}},{"@type":"Question","name":"Does weight or thickness matter for sous vide time?","acceptedAnswer":{"@type":"Answer","text":"Thickness. Heat travels into food from every side, so the time depends on the distance to the center, not how heavy the piece is. Two 8-ounce steaks of the same thickness take the same time as one. Measure the thickest point of the cut."}},{"@type":"Question","name":"What temperature should I sous vide salmon?","acceptedAnswer":{"@type":"Answer","text":"For tender, moist salmon that just starts to flake, use 122°F (50°C) for 50 min to 1 h 20 min for a 1-inch fillet. Use 110°F (43°C) for a silky, translucent texture or 130°F (54°C) for flaky fish. Fish isn't pasteurized below 130°F, so use very fresh, previously frozen salmon."}},{"@type":"Question","name":"Do I need a vacuum sealer for sous vide?","acceptedAnswer":{"@type":"Answer","text":"No, but it helps. You can use zipper bags and the water displacement method to push out air. A vacuum sealer removes more air, so bags don't float, food heats evenly, and you can seal and freeze portions ahead of time to cook straight from the freezer."}},{"@type":"Question","name":"Why should sous vide cooks below 130°F stay under 4 hours?","acceptedAnswer":{"@type":"Answer","text":"Some bacteria, including Clostridium perfringens, can still grow below about 130°F (54.4°C). Food safety guidance allows unpasteurized food in that range for under 4 hours, so the calculator caps rare steaks and delicate fish there and warns you if a thick cut needs longer."}}]}]</script>
+<style>
+/* Layout: a sea-glass work surface with the inputs on the left and a dark "circulator display" on the right that reads out bath temp and time. */
+:root{
+  --bg:#eef3f0; --surface:#ffffff; --surface-2:#f6f9f7; --ink:#10261f; --muted:#52645c; --line:#d3ded8;
+  --brand:#13392b; --on-brand:#ffffff; --accent:#1d7f66; --accent-soft:#dcefe7;
+  --panel:#0f2520; --panel-2:#16322b; --panel-fg:#e7f5ef; --panel-dim:#93b6a9; --lcd:#78e8bf;
+  --seg-heat:#4fb7c9; --seg-hold:#e0a648; --seg-ready:#78e8bf;
+  --warn-bg:#fbf0dc; --warn-fg:#7a4a0c; --stop-bg:#fbe3e3; --stop-fg:#8a1d22; --info-bg:#e3f1ec; --info-fg:#174b3b;
+  --f-display:"Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --f-body:"Source Sans 3", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-mono:"JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --r:14px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0b1613; --surface:#12211c; --surface-2:#172a24; --ink:#e3eee9; --muted:#9db3aa; --line:#25392f;
+  --brand:#8fd6b6; --on-brand:#0b1613; --accent:#5cc9a2; --accent-soft:#183a2f;
+  --panel:#07110e; --panel-2:#0f211b; --panel-fg:#e7f5ef; --panel-dim:#8aa99d; --lcd:#78e8bf;
+  --warn-bg:#3a2a12; --warn-fg:#f3cf94; --stop-bg:#3d1719; --stop-fg:#f6b3b6; --info-bg:#163229; --info-fg:#b7e6d3;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0b1613; --surface:#12211c; --surface-2:#172a24; --ink:#e3eee9; --muted:#9db3aa; --line:#25392f;
+  --brand:#8fd6b6; --on-brand:#0b1613; --accent:#5cc9a2; --accent-soft:#183a2f;
+  --panel:#07110e; --panel-2:#0f211b; --panel-fg:#e7f5ef; --panel-dim:#8aa99d; --lcd:#78e8bf;
+  --warn-bg:#3a2a12; --warn-fg:#f3cf94; --stop-bg:#3d1719; --stop-fg:#f6b3b6; --info-bg:#163229; --info-fg:#b7e6d3;
+  color-scheme:dark}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.6 var(--f-body);-webkit-font-smoothing:antialiased}
+.wrap{max-width:1160px;margin:0 auto;padding-left:max(20px, env(safe-area-inset-left, 0px));padding-right:max(20px, env(safe-area-inset-right, 0px))}
+h1,h2,h3{font-family:var(--f-display);line-height:1.1;margin:0;text-wrap:balance;letter-spacing:-.01em}
+h2{font-size:clamp(1.7rem,3.2vw,2.4rem);font-weight:800}
+h3{font-size:1.15rem;font-weight:700}
+p{margin:0}
+a{color:var(--accent)}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:6px}
+.eyebrow{font:700 .78rem/1 var(--f-body);letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+section{padding-block:72px}
+
+/* header */
+.site-header{border-bottom:1px solid var(--line);background:var(--bg)}
+.nav{display:flex;align-items:center;gap:24px;min-height:68px}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);font:800 1.02rem/1.05 var(--f-display)}
+.logo svg{width:34px;height:34px;flex:none}
+.nav-links{display:flex;gap:22px;list-style:none;margin:0 0 0 auto;padding:0}
+.nav-links a{color:var(--muted);text-decoration:none;font-weight:600;font-size:.95rem}
+.nav-links a:hover{color:var(--ink)}
+.by{font-size:.85rem;color:var(--muted)}
+.by a{color:var(--ink);font-weight:700;text-decoration:none}
+@media (max-width:820px){.nav-links{display:none}.by{margin-left:auto}}
+
+/* hero + calculator */
+.intro{padding-block:44px 28px}
+.intro h1{font-size:clamp(2.1rem,5vw,3.6rem);font-weight:800;max-width:16ch}
+.intro .lead{margin-top:14px;max-width:62ch;color:var(--muted);font-size:1.12rem}
+.calc-sec{padding-block:0 72px}
+.calc{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:22px;align-items:start}
+@media (max-width:900px){.calc{grid-template-columns:1fr}}
+.inputs{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:26px;display:grid;gap:24px}
+.field{display:grid;gap:10px;min-width:0}
+.field-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.label{font-weight:700;font-size:.98rem}
+.hint{font-size:.88rem;color:var(--muted)}
+select{width:100%;font:600 1rem var(--f-body);color:var(--ink);background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:12px 40px 12px 14px;appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);background-position:calc(100% - 20px) 52%,calc(100% - 14px) 52%;background-size:6px 6px;background-repeat:no-repeat}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip-opt{position:relative}
+.chip-opt input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
+.chip-opt span{display:flex;flex-direction:column;gap:1px;padding:9px 13px;border:1px solid var(--line);border-radius:10px;background:var(--surface-2);font-weight:700;font-size:.95rem;line-height:1.2;cursor:pointer}
+.chip-opt small{font:500 .78rem var(--f-mono);color:var(--muted)}
+.chip-opt input:checked + span{background:var(--brand);border-color:var(--brand);color:var(--on-brand)}
+.chip-opt input:checked + span small{color:inherit;opacity:.8}
+.chip-opt input:focus-visible + span{outline:3px solid var(--accent);outline-offset:2px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--surface-2)}
+.seg button{font:700 .9rem var(--f-body);color:var(--muted);background:none;border:0;padding:8px 13px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--brand);color:var(--on-brand)}
+.seg.small button{padding:5px 10px;font-size:.82rem}
+.thick-row{display:flex;align-items:center;gap:16px}
+.thick-val{font:700 1.35rem var(--f-mono);min-width:6.2ch;text-align:right}
+input[type=range]{flex:1;min-width:0;accent-color:var(--accent);height:28px}
+.ticks{display:flex;justify-content:space-between;font:500 .75rem var(--f-mono);color:var(--muted);padding-right:calc(6.2ch + 22px)}
+.switch{display:flex;gap:12px;align-items:flex-start;cursor:pointer}
+.switch input{appearance:none;flex:none;width:44px;height:26px;border-radius:99px;background:var(--line);position:relative;cursor:pointer;margin:0;transition:background .2s}
+.switch input::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:var(--surface);box-shadow:0 1px 2px rgba(0,0,0,.25);transition:transform .2s}
+.switch input:checked{background:var(--accent)}
+.switch input:checked::after{transform:translateX(18px)}
+.switch input:disabled{opacity:.75;cursor:not-allowed}
+.units{display:flex;gap:10px;flex-wrap:wrap;align-items:center;padding-top:18px;border-top:1px dashed var(--line)}
+.units .hint{margin-right:auto}
+
+/* circulator display */
+.display{background:var(--panel);color:var(--panel-fg);border-radius:var(--r);padding:26px;display:grid;gap:22px;box-shadow:0 18px 40px -24px rgba(5,25,18,.55)}
+.display .eyebrow{color:var(--panel-dim)}
+.readouts{display:grid;grid-template-columns:auto 1fr;gap:18px 26px;align-items:end}
+@media (max-width:480px){.readouts{grid-template-columns:1fr}}
+.lcd{font:700 clamp(2.8rem,7vw,4rem)/1 var(--f-mono);color:var(--lcd);letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.lcd-sub{font:500 .95rem var(--f-mono);color:var(--panel-dim);margin-top:6px}
+.time{font:700 clamp(1.6rem,3.6vw,2.3rem)/1.1 var(--f-mono);font-variant-numeric:tabular-nums;color:var(--panel-fg)}
+.time .dash{color:var(--panel-dim);font-weight:500}
+.r-label{font:700 .72rem var(--f-body);letter-spacing:.14em;text-transform:uppercase;color:var(--panel-dim);margin-bottom:8px}
+.bar{display:flex;height:14px;border-radius:99px;overflow:hidden;background:var(--panel-2)}
+.bar i{display:block;height:100%;transition:flex-grow .35s ease}
+.bar .heat{background:var(--seg-heat)} .bar .hold{background:var(--seg-hold)} .bar .ready{background:repeating-linear-gradient(135deg,var(--seg-ready) 0 6px,#5fcda4 6px 12px)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:10px;font-size:.88rem;color:var(--panel-dim)}
+.legend span{display:inline-flex;align-items:center;gap:7px}
+.legend b{color:var(--panel-fg);font:600 .85rem var(--f-mono)}
+.legend i{width:10px;height:10px;border-radius:3px;display:inline-block}
+.texture{display:grid;grid-template-columns:118px 1fr;gap:18px;align-items:center;padding:16px;border-radius:12px;background:var(--panel-2)}
+.texture svg{width:118px;height:auto;display:block}
+.texture h3{color:var(--panel-fg);font-size:1.05rem}
+.texture p{color:var(--panel-dim);font-size:.95rem;margin-top:4px}
+.texture.noimg{grid-template-columns:1fr}
+@media (max-width:480px){.texture{grid-template-columns:84px 1fr;gap:14px}.texture svg{width:84px}}
+.texture.noimg svg{display:none}
+.plan{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;font-size:.95rem;color:var(--panel-dim)}
+.plan label{font-weight:600;color:var(--panel-fg)}
+.plan input{font:600 .95rem var(--f-mono);background:var(--panel-2);color:var(--panel-fg);border:1px solid #2b4a40;border-radius:8px;padding:6px 8px;color-scheme:dark}
+.plan output{color:var(--panel-fg)}
+.note{border-radius:12px;padding:14px 16px;font-size:.95rem;line-height:1.5}
+.note strong{display:block;margin-bottom:2px}
+.note.info{background:var(--info-bg);color:var(--info-fg)}
+.note.warn{background:var(--warn-bg);color:var(--warn-fg)}
+.note.stop{background:var(--stop-bg);color:var(--stop-fg)}
+.finish{font-size:.95rem;color:var(--panel-dim)}
+.finish b{color:var(--panel-fg)}
+.actions{display:flex;gap:10px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:8px;font:700 .95rem var(--f-body);text-decoration:none;border-radius:10px;padding:11px 16px;border:1px solid transparent;cursor:pointer}
+.btn svg{width:18px;height:18px}
+.btn-lcd{background:var(--lcd);color:#0b2119}
+.btn-ghost-d{background:transparent;color:var(--panel-fg);border-color:#2f5045}
+.btn-primary{background:var(--brand);color:var(--on-brand)}
+.btn-ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+.credit{margin-top:14px;font-size:.85rem;color:var(--muted);text-align:right}
+
+/* mobile */
+.mnav{display:none}
+@media (max-width:820px){
+  .mnav{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-block:0 10px;margin-top:-4px}
+  .mnav::-webkit-scrollbar{display:none}
+  .mnav a{flex:none;display:inline-flex;align-items:center;min-height:40px;padding:0 14px;border:1px solid var(--line);border-radius:99px;color:var(--ink);text-decoration:none;font-weight:600;font-size:.92rem;background:var(--surface)}
+}
+.field-head{flex-wrap:wrap}
+input[type=range]{-webkit-appearance:none;appearance:none;background:transparent;height:36px}
+input[type=range]::-webkit-slider-runnable-track{height:8px;border-radius:99px;background:linear-gradient(var(--accent),var(--accent)) 0/var(--fill,50%) 100% no-repeat,var(--line)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;height:28px;margin-top:-10px;border-radius:50%;background:var(--surface);border:3px solid var(--accent);box-shadow:0 1px 3px rgba(0,0,0,.25)}
+input[type=range]::-moz-range-track{height:8px;border-radius:99px;background:var(--line)}
+input[type=range]::-moz-range-progress{height:8px;border-radius:99px;background:var(--accent)}
+input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--surface);border:3px solid var(--accent)}
+.plan input,textarea{font-size:16px}
+@media (max-width:600px){
+  body{font-size:16px}
+  section{padding-block:52px}
+  .intro{padding-block:28px 20px}
+  .intro .lead{font-size:1.02rem}
+  .inputs,.display{padding:18px;gap:20px}
+  #startField .seg{display:flex}
+  #startField .seg button{flex:1}
+  .chip-opt span{min-height:48px;justify-content:center}
+  .r-label{font-size:.75rem}
+  .readouts{gap:14px}
+  .bridge-media{min-height:200px}
+  .foot ul a{display:inline-block;padding-block:8px}
+  .credit{text-align:left}
+}
+.peek{position:fixed;left:0;right:0;bottom:0;z-index:20;display:none;align-items:center;gap:14px;
+  padding:10px max(16px, env(safe-area-inset-right, 0px)) calc(10px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
+  background:var(--panel);color:var(--panel-fg);box-shadow:0 -8px 24px -12px rgba(0,0,0,.45);transform:translateY(110%);transition:transform .25s ease}
+.peek.show{transform:none}
+.peek .pt{font:700 1.4rem/1 var(--f-mono);color:var(--lcd)}
+.peek .pm{font:600 .95rem/1.2 var(--f-mono);min-width:0;flex:1}
+.peek .pm small{display:block;font:500 .78rem var(--f-body);color:var(--panel-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.peek a{flex:none;min-height:44px;display:inline-flex;align-items:center;padding:0 14px;border-radius:10px;background:var(--lcd);color:#0b2119;font-weight:700;text-decoration:none;font-size:.92rem}
+@media (max-width:900px){.peek{display:flex}}
+
+@media (pointer:coarse){.seg button{min-height:44px;padding:0 14px}.seg.small button{min-height:40px;padding:0 14px;font-size:.9rem}}
+.no-js .peek,.no-js .plan,.no-js .actions #copyBtn,.no-js .units{display:none!important}
+/* bridge */
+.bridge-card{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+@media (max-width:820px){.bridge-card{grid-template-columns:1fr}}
+.bridge-media{position:relative;min-height:260px;background:var(--accent-soft)}
+.bridge-media svg{position:absolute;inset:0;width:100%;height:100%}
+.bridge-media img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.bridge-body{padding:clamp(24px,4vw,44px);display:grid;gap:16px;align-content:center}
+.bridge-body ul{margin:0;padding:0;list-style:none;display:grid;gap:10px}
+.bridge-body li{display:grid;grid-template-columns:22px 1fr;gap:10px}
+.bridge-body li svg{width:20px;height:20px;color:var(--accent);margin-top:3px}
+.bridge-body .actions{margin-top:6px}
+
+/* cheat sheet */
+.sheet-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:end;gap:16px;margin-bottom:22px}
+.sheet-head p{color:var(--muted);max-width:60ch;margin-top:10px}
+.table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:.96rem;table-layout:fixed}
+thead th:nth-child(1){width:38%}thead th:nth-child(2){width:30%}
+th,td{overflow-wrap:break-word}
+th,td{text-align:left;padding:11px 16px;border-bottom:1px solid var(--line);vertical-align:top}
+thead th{font:700 .75rem var(--f-body);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);background:var(--surface-2);position:sticky;top:0}
+tbody tr.grp th{font:800 1.05rem var(--f-display);background:var(--accent-soft);color:var(--ink);padding-block:10px}
+tbody tr.fname th{font-weight:700;padding-top:16px;border-bottom:0}
+tbody tr.fname th span{color:var(--muted);font-weight:400}
+tbody tr.ftip td{padding-top:0;color:var(--muted);font-size:.88rem;border-bottom:1px solid var(--line)}
+td:first-child{padding-left:28px}
+td.num{font:500 .92rem var(--f-mono);white-space:nowrap;font-variant-numeric:tabular-nums}
+.nw{white-space:nowrap}
+@media (max-width:600px){th,td{padding:10px 8px}td:first-child{padding-left:14px}td.num{white-space:normal;font-size:.84rem}thead th:nth-child(1){width:31%}thead th:nth-child(2){width:27%}thead th{letter-spacing:.06em;font-size:.68rem}}
+td.food{font-weight:600}
+tbody tr:last-child td{border-bottom:0}
+
+/* how it works */
+.how-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-top:28px}
+@media (max-width:860px){.how-grid{grid-template-columns:1fr}}
+.how{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:22px;display:grid;gap:10px;align-content:start}
+.how .sw{width:38px;height:8px;border-radius:99px}
+.how p{color:var(--muted);font-size:.98rem}
+.how-intro{max-width:66ch;color:var(--muted);margin-top:12px}
+
+/* tips */
+.tips{background:var(--surface);border-block:1px solid var(--line)}
+.tip-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 40px;margin-top:28px}
+@media (max-width:760px){.tip-grid{grid-template-columns:1fr}}
+.tip h3{margin-bottom:6px}
+.tip p{color:var(--muted)}
+
+/* faq */
+.faq-grid{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:40px}
+@media (max-width:860px){.faq-grid{grid-template-columns:1fr}}
+.faq-intro{display:grid;gap:14px;align-content:start}
+.faq-intro > p{color:var(--muted)}
+details{border-bottom:1px solid var(--line)}
+details:first-child{border-top:1px solid var(--line)}
+summary{cursor:pointer;padding-block:16px;font:700 1.08rem/1.35 var(--f-display);list-style:none;display:flex;justify-content:space-between;gap:16px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font:500 1.4rem/1 var(--f-mono);color:var(--accent)}
+details[open] summary::after{content:"–"}
+details p{margin:-4px 0 16px;color:var(--muted);max-width:66ch}
+.embed-box{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px;display:grid;gap:10px}
+.embed-box p{color:var(--muted);font-size:.95rem}
+textarea{width:100%;min-height:96px;font:500 16px/1.45 var(--f-mono);color:var(--ink);background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:10px;resize:vertical}
+.sources{margin:26px 0 0;padding:0;list-style:none;display:grid;gap:6px;font-size:.9rem;color:var(--muted)}
+
+/* footer */
+.site-footer{border-top:1px solid var(--line);padding-block:30px 40px;font-size:.92rem;color:var(--muted)}
+.foot{display:flex;flex-wrap:wrap;gap:16px 28px;align-items:center;justify-content:space-between}
+.foot ul{display:flex;flex-wrap:wrap;gap:18px;list-style:none;margin:0;padding:0}
+.foot a{color:var(--muted);text-decoration:none}
+.foot a:hover{color:var(--ink)}
+.disclaimer{margin-top:16px;max-width:90ch;font-size:.85rem}
+.toast{position:fixed;z-index:30;left:50%;bottom:calc(84px + env(safe-area-inset-bottom, 0px));transform:translate(-50%,20px);background:var(--brand);color:var(--on-brand);padding:10px 16px;border-radius:10px;font-weight:700;opacity:0;pointer-events:none;transition:.25s}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-logo" viewBox="0 0 40 40"><rect x="2" y="2" width="36" height="36" rx="10" fill="var(--brand)"></rect><path d="M10 25c3-2.4 6-2.4 9 0s6 2.4 9 0" fill="none" stroke="var(--on-brand)" stroke-width="2.4" stroke-linecap="round"></path><path d="M10 30c3-2.4 6-2.4 9 0s6 2.4 9 0" fill="none" stroke="var(--on-brand)" stroke-width="2.4" stroke-linecap="round" opacity=".55"></path><rect x="17" y="7" width="6" height="13" rx="3" fill="none" stroke="var(--on-brand)" stroke-width="2.2"></rect><circle cx="20" cy="17" r="1.8" fill="var(--on-brand)"></circle></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"></circle><path d="M8 12.5l2.6 2.6L16 9.6" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"></path></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="2"></rect><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3" fill="none" stroke="currentColor" stroke-width="2"></path></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></symbol>
+</svg>
+
+<header class="site-header" id="top">
+  <div class="wrap nav">
+    <a class="logo" href="#top" aria-label="Sous Vide Calculator home"><svg><use href="#i-logo"></use></svg><span>Sous Vide<br>Calculator</span></a>
+    <ul class="nav-links">
+      <li><a href="#calculator">Calculator</a></li>
+      <li><a href="#chart">Time &amp; temp chart</a></li>
+      <li><a href="#how">How it works</a></li>
+      <li><a href="#faq">FAQ</a></li>
+    </ul>
+    <p class="by">A free tool by <a href="https://owkar.com/?utm_source=sous-vide-calculator&amp;utm_medium=referral&amp;utm_campaign=free-tools&amp;utm_content=header" target="_blank" rel="noopener">OWKAR</a></p>
+  </div>
+  <nav class="wrap mnav" aria-label="Sections"><a href="#calculator">Calculator</a><a href="#chart">Chart</a><a href="#how">How it works</a><a href="#faq">FAQ</a></nav>
+</header>
+
+<main>
+<div class="wrap intro">
+  <p class="eyebrow">Free sous vide calculator</p>
+  <h1 style="margin-top:12px">Sous Vide Time and Temperature Calculator</h1>
+  <p class="lead">Choose your food, how thick it is and how you like it done. You'll get the water bath temperature, the minimum cook time to heat it through and make it safe, and how long it can stay in the bath before the texture suffers.</p>
+</div>
+
+<section class="calc-sec" id="calculator" aria-label="Calculator">
+  <div class="wrap">
+    <div class="calc">
+      <form class="inputs" id="form" autocomplete="off">
+        <div class="field">
+          <label class="label" for="food">What are you cooking?</label>
+          <select id="food"><optgroup label="Beef"><option value="steak" selected="">Steak (ribeye, strip, sirloin, filet)</option><option value="roast">Beef roast (tenderloin, prime rib, sirloin roast)</option><option value="burger">Burgers (ground beef)</option><option value="shortrib">Short ribs &amp; chuck roast</option><option value="brisket">Brisket</option></optgroup><optgroup label="Pork"><option value="chop">Pork chops</option><option value="tenderloin">Pork tenderloin</option><option value="shoulder">Pork shoulder (pulled pork)</option><option value="belly">Pork belly</option></optgroup><optgroup label="Chicken &amp; poultry"><option value="breast">Chicken breast (boneless)</option><option value="thigh">Chicken thighs &amp; legs</option><option value="turkey">Turkey breast (boneless roast)</option><option value="duck">Duck breast</option></optgroup><optgroup label="Lamb"><option value="lambchop">Lamb chops &amp; rack</option><option value="lambleg">Leg of lamb (boneless roast)</option><option value="lambshoulder">Lamb shoulder &amp; shanks</option></optgroup><optgroup label="Fish &amp; seafood"><option value="salmon">Salmon fillet</option><option value="whitefish">White fish (cod, halibut, sea bass)</option><option value="shrimp">Shrimp (peeled)</option><option value="scallop">Scallops</option></optgroup><optgroup label="Eggs"><option value="egg">Eggs (in the shell)</option></optgroup><optgroup label="Vegetables"><option value="veg">Vegetables</option></optgroup></select>
+        </div>
+        <fieldset class="field" style="border:0;padding:0;margin:0">
+          <legend class="label" id="optLegend" style="padding:0;margin-bottom:10px">Doneness</legend>
+          <div class="chips" id="opts" role="radiogroup" aria-labelledby="optLegend"><label class="chip-opt"><input type="radio" name="opt" id="opt-0" value="0"><span>Rare<small>125°F</small></span></label><label class="chip-opt"><input type="radio" name="opt" id="opt-1" value="1" checked=""><span>Medium-rare<small>131°F</small></span></label><label class="chip-opt"><input type="radio" name="opt" id="opt-2" value="2"><span>Medium<small>140°F</small></span></label><label class="chip-opt"><input type="radio" name="opt" id="opt-3" value="3"><span>Medium-well<small>150°F</small></span></label><label class="chip-opt"><input type="radio" name="opt" id="opt-4" value="4"><span>Well done<small>160°F</small></span></label></div>
+        </fieldset>
+        <div class="field" id="thickField">
+          <div class="field-head">
+            <label class="label" for="thick">Thickness at the thickest point</label>
+            <div class="seg small" role="group" aria-label="Length unit"><button type="button" data-len="in" aria-pressed="true">in</button><button type="button" data-len="mm" aria-pressed="false">mm</button></div>
+          </div>
+          <div class="thick-row"><input type="range" id="thick" min="0.5" max="2.5" step="0.25" style="--fill: 25%;" value="1"><output class="thick-val" id="thickOut" for="thick">1 in</output></div>
+          <p class="hint" id="thickHint">Measure thickness, not weight. Time grows with the square of thickness.</p>
+        </div>
+        <div class="field" id="startField">
+          <span class="label" id="startLbl">Going into the bath</span>
+          <div class="seg" role="group" aria-labelledby="startLbl"><button type="button" data-frozen="0" aria-pressed="true">From the fridge</button><button type="button" data-frozen="1" aria-pressed="false">From frozen</button></div>
+        </div>
+        <div class="field" id="pastField" hidden="">
+          <label class="switch"><input type="checkbox" id="past" checked=""><span><span class="label">Add a food-safety hold (pasteurize)</span><br><span class="hint" id="pastHint">Adds time so the center is pasteurized, not just the surface.</span></span></label>
+        </div>
+        <div class="units">
+          <span class="hint">Temperature unit</span>
+          <div class="seg small" role="group" aria-label="Temperature unit"><button type="button" data-unit="F" aria-pressed="true">°F</button><button type="button" data-unit="C" aria-pressed="false">°C</button></div>
+        </div>
+      </form>
+
+      <noscript><p class="note warn" style="grid-column:1/-1"><strong>Turn on JavaScript to change the inputs.</strong>The result below is for a 1-inch medium-rare steak. The chart further down lists times for every food.</p></noscript>
+      <div class="display" id="result" aria-live="polite">
+        <div class="readouts">
+          <div>
+            <p class="r-label">Set the bath to</p>
+            <div class="lcd" id="rTemp">131°F</div>
+            <p class="lcd-sub" id="rTemp2">55°C</p>
+          </div>
+          <div>
+            <p class="r-label">Cook time</p>
+            <p class="time" id="rTime">1 h 20 min</p>
+            <p class="lcd-sub" id="rTimeSub">and up to 3 h 20 min in the bath</p>
+          </div>
+        </div>
+        <div>
+          <div class="bar" id="bar" role="img" aria-label="Cook timeline"><i class="heat" id="bHeat" style="flex-grow: 80;"></i><i class="hold" id="bHold" style="flex-grow: 0;"></i><i class="ready" id="bReady" style="flex-grow: 120;"></i></div>
+          <div class="legend" id="legend"><span><i style="background:var(--seg-heat)"></i>Heat through <b>1 h 20 min</b></span><span><i style="background:var(--seg-ready)"></i>Ready window <b>2 h</b></span></div>
+        </div>
+        <div class="texture" id="texture">
+          <svg viewBox="0 0 120 80" aria-hidden="true">
+            <path d="M8 40c0-19 20-30 52-30s52 11 52 30-20 30-52 30S8 59 8 40z" fill="#5b3420"></path>
+            <path id="xsec" d="M12.5 40c0-16.5 18.5-26 47.5-26s47.5 9.5 47.5 26-18.5 26-47.5 26-47.5-9.5-47.5-26z" fill="rgb(189,54,70)"></path>
+            <path id="marb" d="M30 34c8 3 14-2 22 1s12 6 22 3M38 50c7-3 15 2 24-1s14-3 22 0" fill="none" stroke="#fff" stroke-opacity=".28" stroke-width="1.6" stroke-linecap="round"></path>
+          </svg>
+          <div><h3 id="rDone">Medium-rare</h3><p id="rTex">Warm red-pink from edge to edge. The classic sous vide steak.</p></div>
+        </div>
+        <div class="plan">
+          <label for="startAt">Start at</label>
+          <input type="time" id="startAt" step="300">
+          <output id="rPlan" for="startAt"></output>
+        </div>
+        <div class="note info" id="rNote"><strong>Safe for whole cuts</strong>Bacteria on whole beef and lamb sit on the surface, so the bath plus a hard sear makes it safe. USDA recommends 145°F (63°C) for anyone in a high-risk group.</div>
+        <p class="finish" id="rFinish"><b>To finish:</b> Pat dry and sear 45–60 seconds per side in a smoking-hot pan or on a very hot grill.</p>
+        <div class="actions">
+          <button class="btn btn-lcd" type="button" id="copyBtn"><svg><use href="#i-copy"></use></svg>Copy result</button>
+          <a class="btn btn-ghost-d" href="#chart">See the full chart</a>
+        </div>
+      </div>
+    </div>
+    <p class="credit">Free <a href="https://owkar.com/pages/sous-vide-vacuum-sealer?utm_source=sous-vide-calculator&amp;utm_medium=referral&amp;utm_campaign=free-tools&amp;utm_content=embed-credit" target="_blank" rel="noopener">sous vide calculator by OWKAR</a></p>
+  </div>
+</section>
+
+<section class="bridge-sec" aria-labelledby="bridgeTitle" style="padding-top:0">
+  <div class="wrap">
+    <div class="bridge-card">
+      <div class="bridge-media">
+        <svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+          <rect width="400" height="300" fill="var(--accent-soft)"></rect>
+          <rect x="60" y="70" width="280" height="200" rx="18" fill="var(--surface)" stroke="var(--line)" stroke-width="3"></rect>
+          <path d="M66 130c22-8 44 8 66 0s44-8 66 0 44 8 66 0 44-8 66 0v120a14 14 0 0 1-14 14H80a14 14 0 0 1-14-14z" fill="var(--seg-heat)" opacity=".35"></path>
+          <rect x="250" y="40" width="40" height="170" rx="12" fill="var(--panel)"></rect>
+          <rect x="257" y="52" width="26" height="16" rx="3" fill="var(--lcd)"></rect>
+          <path d="M130 150h96c8 0 14 6 14 14v54c0 8-6 14-14 14h-96c-8 0-14-6-14-14v-54c0-8 6-14 14-14z" fill="#f1f6f4" opacity=".85"></path>
+          <ellipse cx="178" cy="192" rx="44" ry="24" fill="#c03a4a"></ellipse>
+          <ellipse cx="178" cy="192" rx="44" ry="24" fill="none" stroke="#5b3420" stroke-width="4"></ellipse>
+          <circle cx="216" cy="160" r="6" fill="var(--accent)"></circle>
+        </svg>
+        
+      </div>
+      <div class="bridge-body">
+        <p class="eyebrow">Before the bath</p>
+        <h2 id="bridgeTitle">The times above assume the bag is tight against the food</h2>
+        <p style="color:var(--muted)">Air pockets insulate food from the water, so a loosely bagged steak heats unevenly and can float to the surface. Removing the air keeps every side in contact with the bath.</p>
+        <ul>
+          <li><svg><use href="#i-check"></use></svg><span>Bags stay sunk, so food heats on schedule.</span></li>
+          <li><svg><use href="#i-check"></use></svg><span>Marinades and butter stay pressed against the food.</span></li>
+          <li><svg><use href="#i-check"></use></svg><span>Seal portions ahead, freeze them, and cook straight from frozen.</span></li>
+        </ul>
+        <div class="actions">
+          <a class="btn btn-primary" href="https://owkar.com/pages/sous-vide-vacuum-sealer?utm_source=sous-vide-calculator&amp;utm_medium=referral&amp;utm_campaign=free-tools&amp;utm_content=bridge" target="_blank" rel="noopener">See the sous vide vacuum sealer <svg><use href="#i-arrow"></use></svg></a>
+          <a class="btn btn-ghost" href="https://owkar.com/products/owkar-reusable-vacuum-sealer-bags-50-piece-set?utm_source=sous-vide-calculator&amp;utm_medium=referral&amp;utm_campaign=free-tools&amp;utm_content=bridge-bags" target="_blank" rel="noopener">Reusable bags</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="chart" aria-labelledby="chartTitle" style="padding-top:0">
+  <div class="wrap">
+    <div class="sheet-head">
+      <div>
+        <p class="eyebrow">Cheat sheet</p>
+        <h2 id="chartTitle" style="margin-top:10px">Sous vide time and temperature chart</h2>
+        <p>Times are for the thickness listed, starting from the fridge, and include the food-safety hold where it applies. Use the calculator for other thicknesses or frozen food.</p>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th scope="col">Doneness</th><th scope="col">Bath temp</th><th scope="col">Cook time</th></tr></thead>
+        <tbody><tr class="grp"><th colspan="3" scope="colgroup">Beef</th></tr><tr class="fname"><th colspan="3" scope="rowgroup">Steak (ribeye, strip, sirloin, filet) <span>· 1 in thick</span></th></tr><tr class="ftip"><td colspan="3">To finish: Pat dry and sear 45–60 seconds per side in a smoking-hot pan or on a very hot grill.</td></tr><tr><td>Rare</td><td class="num"><span class="nw">125°F</span> <span class="nw">/ 51.7°C</span></td><td class="num"><span class="nw">1 h 20 min –</span> <span class="nw">3 h 20 min</span></td></tr><tr><td>Medium-rare</td><td class="num"><span class="nw">131°F</span> <span class="nw">/ 55°C</span></td><td class="num"><span class="nw">1 h 20 min –</span> <span class="nw">3 h 20 min</span></td></tr><tr><td>Medium</td><td class="num"><span class="nw">140°F</span> <span class="nw">/ 60°C</span></td><td class="num"><span class="nw">1 h 20 min –</span> <span class="nw">3 h 20 min</span></td></tr><tr><td>Medium-well</td><td class="num"><span class="nw">150°F</span> <span class="nw">/ 65.6°C</span></td><td class="num"><span class="nw">1 h 20 min –</span> <span class="nw">3 h 20 min</span></td></tr><tr><td>Well done</td><td class="num"><span class="nw">160°F</span> <span class="nw">/ 71.1°C</span></td><td class="num"><span class="nw">1 h 20 min –</span> <span class="nw">3 h 20 min</span></td></tr><tr class="fname"><th colspan="3" scope="rowgroup">Beef roast (tenderloin, prime rib, sirloin roast) <span>· 3 in thick</span></th></tr><tr class="ftip"><td colspan="3">To finish: Dry the surface well, then sear all sides in a hot pan or blast in a 500°F oven for 8–10 minutes.</td></tr><tr><td>Rare</td><td class="num"><span class="nw">125°F</span> <span class="nw">/ 51.7°C</span></td><td class="num"><span class="nw">3 h 55 min –</span> <span class="nw">4 h</span></td></tr><tr><td>Medium-rare</td><td class="num"><span class="nw">131°F</span> <span class="nw">/ 55°C</span></td><td class="num"><span class="nw">3 h 55 min –</span> <span class="nw">6 h 55 min</span></td></tr><tr><td>Medium</td><td class="num"><span class="nw">140°F</span> <span class="nw">/ 60°C</span></td><td class="num"><span class="nw">3 h 55 min –</span> <span class="nw">6 h 55 min</span></td></tr><tr><td>Medium-well</td><td class="num"><span class="nw">150°F</span> <span class="nw">/ 65.6°C</span></td><td class="num"><span class="nw">3 h 55 min –</span> <span class="nw">6 h 55 min</span></td></tr><tr class="fname"><th colspan="3" scope="rowgroup">Burgers (ground beef) <span>· ¾ in thick</span></th></tr><tr class="ftip"><td colspan="3">To finish: Sear 30–45 seconds per side, add cheese in the pan, and serve right away.</td></tr><tr><td>Medium-rare</td><td class="num"><span class="nw">135°F</span> <span class="nw">/ 57.2°C</span></td><td class="num"><span class="nw">1 h 35 min –</span> <span class="nw">3 h 5 min</span></td></tr><tr><td>Medium</td><td class="num"><span class="nw">140°F</span> <span class="nw">/ 60°C</span></td><td class="num"><span class="nw">1 h 5 min –</span> <span class="nw">2 h 35 min</span></td></tr><tr><td>Medium-well</td><td class="num"><span class="nw">150°F</span> <span class="nw">/ 65.6°C</span></td><td class="num"><span class="nw">50 min –</span> <span class="nw">2 h 20 min</span></td></tr><tr><td>Well done</td><td class="num"><span class="nw">160°F</span> <span class="nw">/ 71.1°C</span></td><td class="num"><span class="nw">50 min –</span> <span class="nw">2 h 20 min</span></td></tr><tr class="fname"><th colspan="3" scope="rowgroup">Short ribs &amp; chuck roast</th></tr><tr class="ftip"><td colspan="3">To finish: Chill in the bag if serving later. Dry and sear, or glaze under the broiler.</td></tr><tr><td>Steak-like</td><td class="num"><span class="nw">135°F</span> <span class="nw">/ 57.2°C</span></td><td class="num"><span class="nw">24–48 h</span></td></tr><tr><td>Tender &amp; sliceable</td><td class="num"><span class="nw">155°F</span> <span class="nw">/ 68.3°C</span></td><td class="num"><span class="nw">24–36 h</span></td></tr><tr><td>Fall-apart</td><td class="num"><span class="nw">165°F</span> <span class="nw">/ 73.9°C</span></td><td class="num"><span class="nw">18–24 h</span></td></tr><tr class="fname"><th colspan="3" scope="rowgroup">Brisket</th></tr><tr class="ftip"><td colspan="3">To finish: Smoke or roast at 300°F for 1–2 hours to build bark, or sear the fat cap hard.</td></tr><tr><td>Steak-like</td><td class="num"><span class="nw">135°F</span> <span class="nw">/ 57.2°C</span></td><td class="num"><span class="nw">36–48 h</span></td></tr><tr><td>Juicy &amp; sliceable</td><td class="num"><span class="nw">155°F</span> <span class="nw">/ 68.3°C</span></td><td class="num"><span class="nw">24–36 h</span></td></tr><tr><td>Traditional</td><td class="num"><span class="nw">165°F</span> <span class="nw">/ 73.9°C</span></td><td class="num"><span class="nw">24–36 h</span></td></tr><tr class="grp"><th colspan="3" scope="colgroup">Pork</th></tr><tr class="fname"><th colspan="3" scope="rowgroup">Pork chops <span>· 1 in thick</span></th></tr><tr class="ftip"><td colspan="3">To finish: Dry well and sear 1 minute per side. Render the fat edge against the pan.</td></tr><tr><td>Rosy</td><td class="num"><span class="nw">135°F</span> <span class="nw">/ 57.2°C</span></td><td class="num"><span class="nw">2 h 5 min –</span> <span class="nw">4 h 5 min</span></td></tr><tr><td>Juicy</td><td class="num"><span class="nw">140°F</span> <span class="nw">/ 60°C</span></td><td class="num"><span class="nw">1 h 35 min –</span> <span class="nw">3 h 35 min</span></td></tr><tr><td>Traditional</td><td class="num"><span class="nw">145°F</span> <span class="nw">/ 62.8°C</span></td><td class="num"><span class="nw">1 h 25 min –</span> <span class="nw">3 h 25 min</span></td></tr><tr><td>Well done</td><td class="num"><span class="nw">160°F</span> <span class="nw">/ 71.1°C</span></td><td class="num"><span class="nw">1 h 20 min –</span> <span class="nw">3 h 20 min</span></td></tr><tr class="fname"><th colspan="3" scope="rowgroup">Pork tenderloin <span>· 2 in thick</span></th></tr><tr class="ftip"><td colspan="3">To finish: Sear all sides for about 2 minutes total, then rest 2 minutes and slice.</td></tr><tr><td>Rosy</td><td class="num"><span class="nw">135°F</span> <span class="nw">/ 57.2°C</span></td><td class="num"><span class="nw">2 h 50 min –</span> <span class="nw">4 h 50 min</span></td></tr><tr><td>Juicy</td><td class="num"><span class="nw">140°F</span> <span class="nw">/ 60°C</span></td><td class="num"><span class="nw">2 h 20 min –</span> <span class="nw">4 h 20 min</span></td></tr><tr><td>Traditional</td><td class="num"><span class="nw">145°F</span> <span class="nw">/ 62.8°C</span></td><td class="num"><span class="nw">2 h 10 min –</span> <span class="nw">4 h 10 min</span></td></tr><tr class="fname"><th colspan="3" scope="rowgroup">Pork shoulder (pulled pork)</th></tr><tr class="ftip"><td colspan="3">To finish: Rub with spices and roast at 450°F for 15 minutes for a crust, then pull.</td></tr><tr><td>Sliceable</td><td class="num"><span class="nw">145°F</span> <span class="nw">/ 62.8°C</span></td><td class="num"><span class="nw">24–36 h</span></td></tr><tr><td>Tender &amp; pullable</td><td class="num"><span class="nw">158°F</span> <span class="nw">/ 70°C</span></td><td class="num"><span class="nw">24–36 h</span></td></tr><tr><td>Fully shreddable</td><td class="num"><span class="nw">165°F</span> <span class="nw">/ 73.9°C</span></td><td class="num"><span class="nw">18–24 h</span></td></tr><tr class="fname"><th colspan="3" scope="rowgroup">Pork belly</th></tr><tr class="ftip"><td colspan="3">To finish: Chill and press, then slice and crisp the skin side in a hot pan.</td></tr><tr><td>Tender &amp; sliceable</td><td class="num"><span class="nw">158°F</span> <span class="nw">/ 70°C</span></td><td class="num"><span class="nw">24–36 h</span></td></tr><tr><td>Melting</td><td class="num"><span class="nw">170°F</span> <span class="nw">/ 76.7°C</span></td><td class="num"><span class="nw">10–12 h</span></td></tr><tr class="grp"><th colspan="3" scope="colgroup">Chicken &amp; poultry</th></tr><tr class="fname"><th colspan="3" scope="rowgroup">Chicken breast (boneless) <span>· 1 in thick</span></th></tr><tr class="ftip"><td colspan="3">To finish: Pat dry and sear skin-side down until crisp, about 2 minutes. Or chill and slice for salads.</td></tr><tr><td>Silky</td><td class="num"><span class="nw">140°F</span> <span class="nw">/ 60°C</span></td><td class="num"><span class="nw">2 h –</span> <span class="nw">4 h</span></td></tr><tr><td>Juicy</td><td class="num"><span class="nw">145°F</span> <span class="nw">/ 62.8°C</span></td><td class="num"><span class="nw">1 h 35 min –</span> <span class="nw">3 h 35 min</span></td></tr><tr><td>Classic</td><td class="num"><span class="nw">150°F</span> <span class="nw">/ 65.6°C</span></td><td class="num"><span class="nw">1 h 25 min –</span> <span class="nw">3 h 25 min</span></td></tr><tr><td>Firm</td><td class="num"><span class="nw">160°F</span> <span class="nw">/ 71.1°C</span></td><td class="num"><span class="nw">1 h 20 min –</span> <span class="nw">3 h 20 min</span></td></tr><tr class="fname"><th colspan="3" scope="rowgroup">Chicken thighs &amp; legs <span>· 1 in thick</span></th></tr><tr class="ftip"><td colspan="3">To finish: Crisp the skin in a hot pan, skin-side down, pressing flat for 2–3 minutes.</td></tr><tr><td>Juicy</td><td class="num"><span class="nw">150°F</span> <span class="nw">/ 65.6°C</span></td><td class="num"><span class="nw">1 h 25 min –</span> <span class="nw">5 h 25 min</span></td></tr><tr><td>Tender</td><td class="num"><span class="nw">155°F</span> <span class="nw">/ 68.3°C</span></td><td class="num"><span class="nw">1 h 20 min –</span> <span class="nw">5 h 20 min</span></td></tr><tr><td>Fall-apart</td><td class="num"><span class="nw">165°F</span> <span class="nw">/ 73.9°C</span></td><td class="num"><span class="nw">1 h 20 min –</span> <span class="nw">5 h 20 min</span></td></tr><tr class="fname"><th colspan="3" scope="rowgroup">Turkey breast (boneless roast) <span>· 3½ in thick</span></th></tr><tr class="ftip"><td colspan="3">To finish: Brown the skin under a broiler or in a hot pan, then rest 5 minutes before slicing.</td></tr><tr><td>Very juicy</td><td class="num"><span class="nw">140°F</span> <span class="nw">/ 60°C</span></td><td class="num"><span class="nw">5 h 50 min –</span> <span class="nw">8 h 50 min</span></td></tr><tr><td>Juicy</td><td class="num"><span class="nw">145°F</span> <span class="nw">/ 62.8°C</span></td><td class="num"><span class="nw">5 h 25 min –</span> <span class="nw">8 h 25 min</span></td></tr><tr><td>Classic</td><td class="num"><span class="nw">150°F</span> <span class="nw">/ 65.6°C</span></td><td class="num"><span class="nw">5 h 15 min –</span> <span class="nw">8 h 15 min</span></td></tr><tr class="fname"><th colspan="3" scope="rowgroup">Duck breast <span>· ¾ in thick</span></th></tr><tr class="ftip"><td colspan="3">To finish: Score the skin and render it skin-side down in a cold pan brought to medium heat, 5–7 minutes.</td></tr><tr><td>Medium-rare</td><td class="num"><span class="nw">135°F</span> <span class="nw">/ 57.2°C</span></td><td class="num"><span class="nw">50 min –</span> <span class="nw">3 h 20 min</span></td></tr><tr><td>Medium</td><td class="num"><span class="nw">140°F</span> <span class="nw">/ 60°C</span></td><td class="num"><span class="nw">50 min –</span> <span class="nw">3 h 20 min</span></td></tr><tr><td>Medium-well</td><td class="num"><span class="nw">150°F</span> <span class="nw">/ 65.6°C</span></td><td class="num"><span class="nw">50 min –</span> <span class="nw">3 h 20 min</span></td></tr><tr class="grp"><th colspan="3" scope="colgroup">Lamb</th></tr><tr class="fname"><th colspan="3" scope="rowgroup">Lamb chops &amp; rack <span>· 1¼ in thick</span></th></tr><tr class="ftip"><td colspan="3">To finish: Sear the fat cap first, then each side for 30–45 seconds.</td></tr><tr><td>Medium-rare</td><td class="num"><span class="nw">131°F</span> <span class="nw">/ 55°C</span></td><td class="num"><span class="nw">1 h 45 min –</span> <span class="nw">3 h 45 min</span></td></tr><tr><td>Medium</td><td class="num"><span class="nw">140°F</span> <span class="nw">/ 60°C</span></td><td class="num"><span class="nw">1 h 45 min –</span> <span class="nw">3 h 45 min</span></td></tr><tr><td>Medium-well</td><td class="num"><span class="nw">150°F</span> <span class="nw">/ 65.6°C</span></td><td class="num"><span class="nw">1 h 45 min –</span> <span class="nw">3 h 45 min</span></td></tr><tr class="fname"><th colspan="3" scope="rowgroup">Leg of lamb (boneless roast) <span>· 3½ in thick</span></th></tr><tr class="ftip"><td colspan="3">To finish: Sear all over or roast at 500°F for 10 minutes, then slice thin.</td></tr><tr><td>Medium-rare</td><td class="num"><span class="nw">131°F</span> <span class="nw">/ 55°C</span></td><td class="num"><span class="nw">5 h 10 min –</span> <span class="nw">8 h 10 min</span></td></tr><tr><td>Medium</td><td class="num"><span class="nw">140°F</span> <span class="nw">/ 60°C</span></td><td class="num"><span class="nw">5 h 10 min –</span> <span class="nw">8 h 10 min</span></td></tr><tr><td>Medium-well</td><td class="num"><span class="nw">150°F</span> <span class="nw">/ 65.6°C</span></td><td class="num"><span class="nw">5 h 10 min –</span> <span class="nw">8 h 10 min</span></td></tr><tr class="fname"><th colspan="3" scope="rowgroup">Lamb shoulder &amp; shanks</th></tr><tr class="ftip"><td colspan="3">To finish: Reduce the bag juices into a sauce while you brown the meat.</td></tr><tr><td>Sliceable</td><td class="num"><span class="nw">145°F</span> <span class="nw">/ 62.8°C</span></td><td class="num"><span class="nw">24–48 h</span></td></tr><tr><td>Fork-tender</td><td class="num"><span class="nw">160°F</span> <span class="nw">/ 71.1°C</span></td><td class="num"><span class="nw">24–36 h</span></td></tr><tr><td>Falls off the bone</td><td class="num"><span class="nw">165°F</span> <span class="nw">/ 73.9°C</span></td><td class="num"><span class="nw">24–36 h</span></td></tr><tr class="grp"><th colspan="3" scope="colgroup">Fish &amp; seafood</th></tr><tr class="fname"><th colspan="3" scope="rowgroup">Salmon fillet <span>· 1 in thick</span></th></tr><tr class="ftip"><td colspan="3">To finish: Serve as is, or sear skin-side only for 1 minute. The flesh is delicate, so handle gently.</td></tr><tr><td>Translucent</td><td class="num"><span class="nw">110°F</span> <span class="nw">/ 43.3°C</span></td><td class="num"><span class="nw">50 min –</span> <span class="nw">1 h 20 min</span></td></tr><tr><td>Tender</td><td class="num"><span class="nw">122°F</span> <span class="nw">/ 50°C</span></td><td class="num"><span class="nw">50 min –</span> <span class="nw">1 h 20 min</span></td></tr><tr><td>Flaky</td><td class="num"><span class="nw">130°F</span> <span class="nw">/ 54.4°C</span></td><td class="num"><span class="nw">50 min –</span> <span class="nw">1 h 20 min</span></td></tr><tr><td>Firm</td><td class="num"><span class="nw">140°F</span> <span class="nw">/ 60°C</span></td><td class="num"><span class="nw">50 min –</span> <span class="nw">1 h 20 min</span></td></tr><tr class="fname"><th colspan="3" scope="rowgroup">White fish (cod, halibut, sea bass) <span>· 1 in thick</span></th></tr><tr class="ftip"><td colspan="3">To finish: Lift out carefully with a spatula. Finish with brown butter or a quick sear.</td></tr><tr><td>Delicate</td><td class="num"><span class="nw">122°F</span> <span class="nw">/ 50°C</span></td><td class="num"><span class="nw">50 min –</span> <span class="nw">1 h 20 min</span></td></tr><tr><td>Flaky</td><td class="num"><span class="nw">130°F</span> <span class="nw">/ 54.4°C</span></td><td class="num"><span class="nw">50 min –</span> <span class="nw">1 h 20 min</span></td></tr><tr><td>Firm</td><td class="num"><span class="nw">140°F</span> <span class="nw">/ 60°C</span></td><td class="num"><span class="nw">50 min –</span> <span class="nw">1 h 20 min</span></td></tr><tr class="fname"><th colspan="3" scope="rowgroup">Shrimp (peeled)</th></tr><tr class="ftip"><td colspan="3">To finish: Toss in a hot pan with butter and garlic for 30 seconds, or chill for shrimp cocktail.</td></tr><tr><td>Tender</td><td class="num"><span class="nw">130°F</span> <span class="nw">/ 54.4°C</span></td><td class="num"><span class="nw">20–30 min</span></td></tr><tr><td>Firm</td><td class="num"><span class="nw">140°F</span> <span class="nw">/ 60°C</span></td><td class="num"><span class="nw">20–30 min</span></td></tr><tr class="fname"><th colspan="3" scope="rowgroup">Scallops</th></tr><tr class="ftip"><td colspan="3">To finish: Dry very well and sear 30 seconds per side in a smoking-hot pan.</td></tr><tr><td>Silky</td><td class="num"><span class="nw">123°F</span> <span class="nw">/ 50.6°C</span></td><td class="num"><span class="nw">30–40 min</span></td></tr><tr><td>Tender</td><td class="num"><span class="nw">130°F</span> <span class="nw">/ 54.4°C</span></td><td class="num"><span class="nw">30–40 min</span></td></tr><tr class="grp"><th colspan="3" scope="colgroup">Eggs</th></tr><tr class="fname"><th colspan="3" scope="rowgroup">Eggs (in the shell)</th></tr><tr class="ftip"><td colspan="3">To finish: Crack into a bowl or onto toast. For soft-boiled, cool in ice water for 1 minute before peeling.</td></tr><tr><td>Pasteurized raw</td><td class="num"><span class="nw">135°F</span> <span class="nw">/ 57.2°C</span></td><td class="num"><span class="nw">1 h 15 min –</span> <span class="nw">1 h 30 min</span></td></tr><tr><td>Custardy</td><td class="num"><span class="nw">145°F</span> <span class="nw">/ 62.8°C</span></td><td class="num"><span class="nw">45 min –</span> <span class="nw">1 h</span></td></tr><tr><td>Soft-boiled</td><td class="num"><span class="nw">167°F</span> <span class="nw">/ 75°C</span></td><td class="num"><span class="nw">12–14 min</span></td></tr><tr class="grp"><th colspan="3" scope="colgroup">Vegetables</th></tr><tr class="fname"><th colspan="3" scope="rowgroup">Vegetables</th></tr><tr class="ftip"><td colspan="3">To finish: Toss with the bag juices, or roast for 5 minutes at high heat for color.</td></tr><tr><td>Asparagus</td><td class="num"><span class="nw">183°F</span> <span class="nw">/ 83.9°C</span></td><td class="num"><span class="nw">10–15 min</span></td></tr><tr><td>Corn on the cob</td><td class="num"><span class="nw">183°F</span> <span class="nw">/ 83.9°C</span></td><td class="num"><span class="nw">30–45 min</span></td></tr><tr><td>Carrots</td><td class="num"><span class="nw">183°F</span> <span class="nw">/ 83.9°C</span></td><td class="num"><span class="nw">1 h –</span> <span class="nw">1 h 30 min</span></td></tr><tr><td>Potatoes</td><td class="num"><span class="nw">183°F</span> <span class="nw">/ 83.9°C</span></td><td class="num"><span class="nw">1 h –</span> <span class="nw">1 h 30 min</span></td></tr><tr><td>Beets</td><td class="num"><span class="nw">183°F</span> <span class="nw">/ 83.9°C</span></td><td class="num"><span class="nw">1 h 30 min –</span> <span class="nw">2 h</span></td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section id="how" class="tips" aria-labelledby="howTitle">
+  <div class="wrap">
+    <p class="eyebrow">How the calculator works</p>
+    <h2 id="howTitle" style="margin-top:10px">Temperature sets doneness. Time makes it safe.</h2>
+    <p class="how-intro">The bath temperature decides how done the food will be, because the food can never get hotter than the water. Time does two separate jobs, and the calculator adds them together.</p>
+    <div class="how-grid">
+      <div class="how"><span class="sw" style="background:var(--seg-heat)"></span><h3>Heat through</h3><p>How long the center takes to climb from fridge temperature to within 1°F of the bath. It depends on thickness and shape, not weight. A 2-inch steak takes about four times as long as a 1-inch steak. We use Douglas Baldwin's published heating tables for slab-shaped and cylinder-shaped cuts, and add about 50% for frozen food. Fish is pulled a little earlier, within a few degrees of the bath, because its texture suffers from long cooks.</p></div>
+      <div class="how"><span class="sw" style="background:var(--seg-hold)"></span><h3>Safety hold</h3><p>Below the usual "safe" temperatures, food becomes safe by being held long enough. Chicken at 140°F needs about 40 minutes at temperature to pasteurize. At 160°F it needs seconds. The hold times come from USDA FSIS lethality tables, calculated 1°F below the bath to be cautious.</p></div>
+      <div class="how"><span class="sw" style="background:var(--seg-ready)"></span><h3>Ready window</h3><p>Once food is heated and safe, it won't overcook, but it can turn soft or mushy. The window shows how long it can wait in the bath. Below 130°F the total cook stays under 4 hours, because bacteria can grow at those temperatures.</p></div>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="tipsTitle">
+  <div class="wrap">
+    <p class="eyebrow">Tips</p>
+    <h2 id="tipsTitle" style="margin-top:10px">Getting it right the first time</h2>
+    <div class="tip-grid">
+      <div class="tip"><h3>Preheat the bath first</h3><p>The times start when the bag goes into water that's already at temperature. Add 10–20 minutes if your circulator is heating a large pot from cold tap water.</p></div>
+      <div class="tip"><h3>Keep bags fully under water</h3><p>A floating bag cooks slowly on the exposed side. Remove as much air as possible, and weigh down or clip bags that still float.</p></div>
+      <div class="tip"><h3>Dry, then sear hard and fast</h3><p>Pat the surface dry and sear in a very hot pan for under a minute per side. Long searing overcooks the outer layer you worked to keep even.</p></div>
+      <div class="tip"><h3>Chill fast if you're not eating now</h3><p>Move the sealed bag into an ice bath (half ice, half water) until cold through, then refrigerate. Slow cooling on the counter gives bacteria time to grow.</p></div>
+      <div class="tip"><h3>Check your bag's temperature rating</h3><p>Most bags handle meat and fish temperatures easily. For long cooks or vegetables at 183°F, use bags rated for that heat.</p></div>
+      <div class="tip"><h3>Season simply</h3><p>Salt, pepper and a little fat are enough. Raw garlic and strong aromatics can taste harsh after long cooks, so use them sparingly or add them when searing.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="faq tips" id="faq" aria-labelledby="faqTitle">
+  <div class="wrap faq-grid">
+    <div class="faq-intro">
+      <p class="eyebrow">FAQ</p>
+      <h2 id="faqTitle">Sous vide questions, answered</h2>
+      <p>How the numbers work and where they come from.</p>
+      <div class="embed-box">
+        <h3>Add this calculator to your site</h3>
+        <p>Run a cooking blog or recipe site? Embed the calculator for free. Please keep the credit link.</p>
+        <label class="sr-only" for="embedCode">Embed code</label>
+        <textarea id="embedCode" readonly="">&lt;iframe src="https://bryantdeleon.github.io/sous-vide-calculator/" title="Sous Vide Time and Temperature Calculator" width="100%" height="900" style="border:0;max-width:1160px" loading="lazy"&gt;&lt;/iframe&gt;
+&lt;p style="font-size:13px"&gt;Free &lt;a href="https://owkar.com/pages/sous-vide-vacuum-sealer"&gt;sous vide calculator by OWKAR&lt;/a&gt;&lt;/p&gt;</textarea>
+        <div><button class="btn btn-ghost" type="button" id="copyEmbed"><svg><use href="#i-copy"></use></svg>Copy embed code</button></div>
+      </div>
+    </div>
+    <div>
+      <details open=""><summary>How long does it take to sous vide a 1-inch steak?</summary><p>A 1-inch steak takes about 1 h 20 min to heat through at any temperature, and it can stay in the bath for up to 3 h 20 min before the texture softens. For medium-rare, set the bath to 131°F (55°C). A 2-inch steak needs about 3 h 35 min, because heating time grows with the square of the thickness.</p></details>
+      <details><summary>Is sous vide safe below USDA's recommended temperatures?</summary><p>Yes, when the food is held at temperature long enough. Killing bacteria depends on both temperature and time. USDA's 165°F (74°C) for chicken kills Salmonella almost instantly, but chicken held at 140°F (60°C) for about 32 minutes reaches the same reduction. The calculator adds these hold times from USDA FSIS tables. Whole cuts of beef and lamb are contaminated mainly on the surface, so a sear makes them safe at lower temperatures.</p></details>
+      <details><summary>How long should I sous vide chicken breast?</summary><p>For a 1-inch boneless breast at 145°F (63°C), cook 1 h 35 min to 3 h 35 min. That includes a safety hold so the center is fully pasteurized. Use 140°F (60°C) for the most tender result, or 150°F (66°C) for a more familiar texture.</p></details>
+      <details><summary>Can you overcook food with sous vide?</summary><p>Not in terms of doneness, since food can't get hotter than the water. But texture changes with time. Steaks and chicken turn soft and mealy after several hours, and fish starts to break down after about 30 minutes past the minimum time. Each result shows a ready window so you know how long food can wait.</p></details>
+      <details><summary>Can I sous vide from frozen?</summary><p>Yes. Put the frozen, sealed bag straight into the preheated bath and add about 50% to the heating time. The calculator does this when you choose "From frozen". Don't thaw food at room temperature first.</p></details>
+      <details><summary>Does weight or thickness matter for sous vide time?</summary><p>Thickness. Heat travels into food from every side, so the time depends on the distance to the center, not how heavy the piece is. Two 8-ounce steaks of the same thickness take the same time as one. Measure the thickest point of the cut.</p></details>
+      <details><summary>What temperature should I sous vide salmon?</summary><p>For tender, moist salmon that just starts to flake, use 122°F (50°C) for 50 min to 1 h 20 min for a 1-inch fillet. Use 110°F (43°C) for a silky, translucent texture or 130°F (54°C) for flaky fish. Fish isn't pasteurized below 130°F, so use very fresh, previously frozen salmon.</p></details>
+      <details><summary>Do I need a vacuum sealer for sous vide?</summary><p>No, but it helps. You can use zipper bags and the water displacement method to push out air. A vacuum sealer removes more air, so bags don't float, food heats evenly, and you can seal and freeze portions ahead of time to cook straight from the freezer.</p></details>
+      <details><summary>Why should sous vide cooks below 130°F stay under 4 hours?</summary><p>Some bacteria, including Clostridium perfringens, can still grow below about 130°F (54.4°C). Food safety guidance allows unpasteurized food in that range for under 4 hours, so the calculator caps rare steaks and delicate fish there and warns you if a thick cut needs longer.</p></details>
+      <ul class="sources">
+        <li>Sources: <a href="https://douglasbaldwin.com/sous-vide.html" target="_blank" rel="noopener">Douglas Baldwin, A Practical Guide to Sous Vide Cooking</a> (heating tables, Table 2.2)</li>
+        <li><a href="https://www.canr.msu.edu/uploads/234/48508/RTE_Poultry_Tables1.pdf" target="_blank" rel="noopener">USDA FSIS, Time-Temperature Tables for Cooking Ready-to-Eat Poultry Products</a></li>
+        <li><a href="https://www.canr.msu.edu/uploads/234/48508/Appendix_A_and_Compliance_Guidelines.pdf" target="_blank" rel="noopener">USDA FSIS, Appendix A: Compliance Guidelines for Meeting Lethality Performance Standards</a></li>
+        <li><a href="https://www.foodsafety.gov/food-safety-charts/safe-minimum-internal-temperatures" target="_blank" rel="noopener">FoodSafety.gov, Safe Minimum Internal Temperatures</a></li>
+      </ul>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot">
+      <a class="logo" href="#top"><svg><use href="#i-logo"></use></svg><span>Sous Vide<br>Calculator</span></a>
+      <ul>
+        <li><a href="#calculator">Calculator</a></li>
+        <li><a href="#chart">Chart</a></li>
+        <li><a href="#faq">FAQ</a></li>
+        <li><a href="https://owkar.com/pages/sous-vide-vacuum-sealer?utm_source=sous-vide-calculator&amp;utm_medium=referral&amp;utm_campaign=free-tools&amp;utm_content=footer" target="_blank" rel="noopener">Sous vide sealer</a></li>
+        <li><a href="https://owkar.com/blogs/tips-and-fix?utm_source=sous-vide-calculator&amp;utm_medium=referral&amp;utm_campaign=free-tools&amp;utm_content=footer" target="_blank" rel="noopener">Food storage tips</a></li>
+      </ul>
+      <span>© <span id="year">2026</span> Sous Vide Calculator by <a href="https://owkar.com/?utm_source=sous-vide-calculator&amp;utm_medium=referral&amp;utm_campaign=free-tools&amp;utm_content=footer-brand" target="_blank" rel="noopener">OWKAR</a></span>
+    </div>
+    <p class="disclaimer">This calculator gives general guidance based on published tables, assuming an accurate circulator, food that starts at refrigerator temperature (about 40°F/5°C) and bags fully under water. It is not a substitute for a food thermometer. Pregnant people, young children, older adults and anyone with a weakened immune system should eat only fully pasteurized food and avoid undercooked fish and eggs.</p>
+  </div>
+</footer>
+<div class="peek" id="peek" aria-hidden="true"><span class="pt" id="pTemp">131°F</span><span class="pm"><span id="pTime">1 h 20 min</span><small id="pFood">Steak, medium-rare · up to 3 h 20 min</small></span><a href="#result" tabindex="-1">See result</a></div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+/*ENGINE*/
+var BALDWIN = {
+  slab: [[5,5],[10,19],[15,35],[20,50],[25,75],[30,90],[35,120],[40,150],[45,180],[50,210],[55,240],[60,285],[65,330]],
+  cyl:  [[5,5],[10,11],[15,18],[20,30],[25,40],[30,50],[35,60],[40,75],[45,90],[50,120],[55,135],[60,150],[65,180],[70,210],[75,225],[80,255],[85,285],[90,315],[95,360]]
+};
+/* USDA FSIS hold times in minutes, keyed by internal temp °F */
+var HOLD = {
+  meat: {130:121,131:97,132:77,133:62,134:47,135:37,136:32,137:24,138:19,139:15,140:12,141:10,142:8,143:6,144:5,145:4,146:3.03,147:2.4,148:1.92,149:1.52,150:1.2,151:0.97,152:0.77,153:0.62,154:0.48,155:0.38,156:0.32,157:0.25,158:0},
+  poultry: {136:76.7,137:61.4,138:49.2,139:39.6,140:32,141:25.9,142:21,143:17.1,144:13.9,145:11.3,146:9.1,147:7.4,148:5.8,149:4.6,150:3.5,151:2.6,152:1.9,153:1.4,154:1.1,155:0.87,156:0.69,157:0.55,158:0.43,159:0.34,160:0.27,161:0.21,162:0.17,165:0}
+};
+var COLORS = {
+  beef: [[125,'#9e1f2e'],[131,'#bd3646'],[135,'#c64f5e'],[140,'#cc7479'],[145,'#bd8b84'],[150,'#a98a7c'],[160,'#8a6e60'],[165,'#7c6354']],
+  pork: [[135,'#eba79d'],[140,'#edbcb0'],[145,'#ead0c4'],[160,'#e3d3c6'],[170,'#dccbbd']],
+  poultry: [[135,'#e7a99a'],[140,'#f3ddd0'],[150,'#f2e6da'],[165,'#eee2d3']],
+  salmon: [[110,'#ee7f52'],[122,'#f29a72'],[130,'#f5bb9a'],[140,'#f2d4c2']],
+  white: [[120,'#ece9df'],[130,'#f5f2ea'],[140,'#faf8f3']]
+};
+var FOODS = [
+ {id:'steak',group:'Beef',name:'Steak (ribeye, strip, sirloin, filet)',shape:'slab',def:25,min:10,max:65,extra:120,safety:'whole',fam:'beef',
+  finish:'Pat dry and sear 45–60 seconds per side in a smoking-hot pan or on a very hot grill.',
+  opts:[{k:'Rare',f:125,t:'Cool red center, very soft and buttery.'},{k:'Medium-rare',f:131,t:'Warm red-pink from edge to edge. The classic sous vide steak.',d:1},{k:'Medium',f:140,t:'Pink center with a firmer bite and better-rendered fat.'},{k:'Medium-well',f:150,t:'Just a hint of pink, firm and less juicy.'},{k:'Well done',f:160,t:'Gray-brown throughout and firm, but juicier than pan-cooked well done.'}]},
+ {id:'roast',group:'Beef',name:'Beef roast (tenderloin, prime rib, sirloin roast)',shape:'cyl',def:75,min:40,max:125,extra:180,safety:'whole',fam:'beef',
+  finish:'Dry the surface well, then sear all sides in a hot pan or blast in a 500°F oven for 8–10 minutes.',
+  opts:[{k:'Rare',f:125,t:'Deep red, very tender. Best for tenderloin.'},{k:'Medium-rare',f:131,t:'Rosy pink edge to edge, juicy slices.',d:1},{k:'Medium',f:140,t:'Pink center, firmer slices. Good for fattier prime rib.'},{k:'Medium-well',f:150,t:'Mostly tan with a little pink.'}]},
+ {id:'burger',group:'Beef',name:'Burgers (ground beef)',shape:'slab',def:20,min:12,max:40,extra:90,safety:'ground',fam:'beef',
+  finish:'Sear 30–45 seconds per side, add cheese in the pan, and serve right away.',
+  opts:[{k:'Medium-rare',f:135,t:'Pink and very juicy. Pasteurized by the hold time.',d:1},{k:'Medium',f:140,t:'Light pink and juicy.'},{k:'Medium-well',f:150,t:'Mostly brown, still moist.'},{k:'Well done',f:160,t:'Brown throughout and firm.'}]},
+ {id:'shortrib',group:'Beef',name:'Short ribs & chuck roast',fixed:true,safety:'long',fam:'beef',
+  finish:'Chill in the bag if serving later. Dry and sear, or glaze under the broiler.',
+  opts:[{k:'Steak-like',f:135,a:1440,b:2880,t:'Pink and tender, but still sliceable like a steak.'},{k:'Tender & sliceable',f:155,a:1440,b:2160,t:'Very tender and juicy, holds together when sliced.',d:1},{k:'Fall-apart',f:165,a:1080,b:1440,t:'Shreds easily, like a classic braise.'}]},
+ {id:'brisket',group:'Beef',name:'Brisket',fixed:true,safety:'long',fam:'beef',
+  finish:'Smoke or roast at 300°F for 1–2 hours to build bark, or sear the fat cap hard.',
+  opts:[{k:'Steak-like',f:135,a:2160,b:2880,t:'Pink, tender and sliceable.'},{k:'Juicy & sliceable',f:155,a:1440,b:2160,t:'Holds a clean slice, very moist. The most popular choice.',d:1},{k:'Traditional',f:165,a:1440,b:2160,t:'Falls apart like barbecue brisket.'}]},
+
+ {id:'chop',group:'Pork',name:'Pork chops',shape:'slab',def:25,min:12,max:50,extra:120,safety:'pork',past:1,fam:'pork',
+  finish:'Dry well and sear 1 minute per side. Render the fat edge against the pan.',
+  opts:[{k:'Rosy',f:135,t:'Pink and very juicy, almost like steak.'},{k:'Juicy',f:140,t:'Light pink, tender and juicy.',d:1},{k:'Traditional',f:145,t:'Just past pink, still moist. USDA\'s recommended doneness.'},{k:'Well done',f:160,t:'White throughout and firm.'}]},
+ {id:'tenderloin',group:'Pork',name:'Pork tenderloin',shape:'cyl',def:50,min:30,max:75,extra:120,safety:'pork',past:1,fam:'pork',
+  finish:'Sear all sides for about 2 minutes total, then rest 2 minutes and slice.',
+  opts:[{k:'Rosy',f:135,t:'Pink and silky.'},{k:'Juicy',f:140,t:'Light pink and very tender.',d:1},{k:'Traditional',f:145,t:'Barely pink, moist.'}]},
+ {id:'shoulder',group:'Pork',name:'Pork shoulder (pulled pork)',fixed:true,safety:'long',fam:'pork',
+  finish:'Rub with spices and roast at 450°F for 15 minutes for a crust, then pull.',
+  opts:[{k:'Sliceable',f:145,a:1440,b:2160,t:'Tender, juicy slices like a pork roast.'},{k:'Tender & pullable',f:158,a:1440,b:2160,t:'Pulls apart with a little effort, stays moist.',d:1},{k:'Fully shreddable',f:165,a:1080,b:1440,t:'Classic pulled pork texture.'}]},
+ {id:'belly',group:'Pork',name:'Pork belly',fixed:true,safety:'long',fam:'pork',
+  finish:'Chill and press, then slice and crisp the skin side in a hot pan.',
+  opts:[{k:'Tender & sliceable',f:158,a:1440,b:2160,t:'Soft fat, meat holds a clean slice.',d:1},{k:'Melting',f:170,a:600,b:720,t:'Very soft, rich and spoonable.'}]},
+
+ {id:'breast',group:'Chicken & poultry',name:'Chicken breast (boneless)',shape:'slab',def:25,min:12,max:50,extra:120,safety:'poultry',locked:1,fam:'poultry',
+  finish:'Pat dry and sear skin-side down until crisp, about 2 minutes. Or chill and slice for salads.',
+  opts:[{k:'Silky',f:140,t:'Very tender and juicy, almost silky. Fully pasteurized by the hold.'},{k:'Juicy',f:145,t:'Moist and tender with a bit more bite.',d:1},{k:'Classic',f:150,t:'Juicy with a familiar roast-chicken texture.'},{k:'Firm',f:160,t:'Firm and traditional, still moister than oven-cooked.'}]},
+ {id:'thigh',group:'Chicken & poultry',name:'Chicken thighs & legs',shape:'slab',def:25,min:15,max:50,extra:240,safety:'poultry',locked:1,fam:'poultry',
+  finish:'Crisp the skin in a hot pan, skin-side down, pressing flat for 2–3 minutes.',
+  opts:[{k:'Juicy',f:150,t:'Juicy and slightly springy.'},{k:'Tender',f:155,t:'Tender, juicy and fully cooked.',d:1},{k:'Fall-apart',f:165,t:'Very tender, pulls off the bone.'}]},
+ {id:'turkey',group:'Chicken & poultry',name:'Turkey breast (boneless roast)',shape:'cyl',def:90,min:50,max:125,extra:180,safety:'poultry',locked:1,fam:'poultry',
+  finish:'Brown the skin under a broiler or in a hot pan, then rest 5 minutes before slicing.',
+  opts:[{k:'Very juicy',f:140,t:'Moist and tender throughout.'},{k:'Juicy',f:145,t:'Tender with a classic sliced-turkey bite.',d:1},{k:'Classic',f:150,t:'Firmer slices, familiar holiday texture.'}]},
+ {id:'duck',group:'Chicken & poultry',name:'Duck breast',shape:'slab',def:20,min:12,max:35,extra:150,safety:'duck',past:0,fam:'beef',
+  finish:'Score the skin and render it skin-side down in a cold pan brought to medium heat, 5–7 minutes.',
+  opts:[{k:'Medium-rare',f:135,t:'Rosy red and tender, the way duck breast is usually served.',d:1},{k:'Medium',f:140,t:'Pink and a little firmer.'},{k:'Medium-well',f:150,t:'Mostly brown, firm.'}]},
+
+ {id:'lambchop',group:'Lamb',name:'Lamb chops & rack',shape:'slab',def:30,min:15,max:50,extra:120,safety:'whole',fam:'beef',
+  finish:'Sear the fat cap first, then each side for 30–45 seconds.',
+  opts:[{k:'Medium-rare',f:131,t:'Rosy and tender throughout.',d:1},{k:'Medium',f:140,t:'Pink with a firmer bite.'},{k:'Medium-well',f:150,t:'A little pink, firm.'}]},
+ {id:'lambleg',group:'Lamb',name:'Leg of lamb (boneless roast)',shape:'cyl',def:90,min:50,max:125,extra:180,safety:'whole',fam:'beef',
+  finish:'Sear all over or roast at 500°F for 10 minutes, then slice thin.',
+  opts:[{k:'Medium-rare',f:131,t:'Pink edge to edge, tender slices.',d:1},{k:'Medium',f:140,t:'Light pink, firmer slices.'},{k:'Medium-well',f:150,t:'Mostly tan, still juicy.'}]},
+ {id:'lambshoulder',group:'Lamb',name:'Lamb shoulder & shanks',fixed:true,safety:'long',fam:'beef',
+  finish:'Reduce the bag juices into a sauce while you brown the meat.',
+  opts:[{k:'Sliceable',f:145,a:1440,b:2880,t:'Rosy, tender slices.'},{k:'Fork-tender',f:160,a:1440,b:2160,t:'Very tender, still holds its shape.',d:1},{k:'Falls off the bone',f:165,a:1440,b:2160,t:'Soft and shreddable, ideal for shanks.'}]},
+
+ {id:'salmon',group:'Fish & seafood',name:'Salmon fillet',shape:'slab',def:25,min:10,max:45,extra:30,safety:'fish',fam:'salmon',
+  finish:'Serve as is, or sear skin-side only for 1 minute. The flesh is delicate, so handle gently.',
+  opts:[{k:'Translucent',f:110,t:'Silky and barely set, like warm sashimi.'},{k:'Tender',f:122,t:'Moist and just starting to flake. A favorite for first-timers.',d:1},{k:'Flaky',f:130,t:'Opaque and flaky, still moist.'},{k:'Firm',f:140,t:'Fully opaque and firm, like baked salmon.'}]},
+ {id:'whitefish',group:'Fish & seafood',name:'White fish (cod, halibut, sea bass)',shape:'slab',def:25,min:10,max:45,extra:30,safety:'fish',fam:'white',
+  finish:'Lift out carefully with a spatula. Finish with brown butter or a quick sear.',
+  opts:[{k:'Delicate',f:122,t:'Soft, moist and barely flaking.'},{k:'Flaky',f:130,t:'Tender flakes, still very moist.',d:1},{k:'Firm',f:140,t:'Fully opaque, firm flakes.'}]},
+ {id:'shrimp',group:'Fish & seafood',name:'Shrimp (peeled)',fixed:true,safety:'fish',fam:'salmon',
+  finish:'Toss in a hot pan with butter and garlic for 30 seconds, or chill for shrimp cocktail.',
+  opts:[{k:'Tender',f:130,a:20,b:30,t:'Snappy and juicy, never rubbery.',d:1},{k:'Firm',f:140,a:20,b:30,t:'Fully opaque with a classic bite.'}]},
+ {id:'scallop',group:'Fish & seafood',name:'Scallops',fixed:true,safety:'fish',fam:'white',
+  finish:'Dry very well and sear 30 seconds per side in a smoking-hot pan.',
+  opts:[{k:'Silky',f:123,a:30,b:40,t:'Translucent center, sweet and tender.',d:1},{k:'Tender',f:130,a:30,b:40,t:'Just opaque and tender.'}]},
+
+ {id:'egg',group:'Eggs',name:'Eggs (in the shell)',fixed:true,safety:'egg',noimg:1,
+  finish:'Crack into a bowl or onto toast. For soft-boiled, cool in ice water for 1 minute before peeling.',
+  optLabel:'Style',
+  opts:[{k:'Pasteurized raw',f:135,a:75,b:90,t:'Still looks raw. Safer for homemade mayo, Caesar dressing and eggnog.'},{k:'Custardy',f:145,a:45,b:60,t:'Soft, custard-like white and a thick, jammy yolk. Known as the "63°C egg."',d:1},{k:'Soft-boiled',f:167,a:12,b:14,t:'Set white and a runny yolk, like a classic soft-boiled egg.'}]},
+ {id:'veg',group:'Vegetables',name:'Vegetables',fixed:true,safety:'veg',noimg:1,optLabel:'Vegetable',
+  finish:'Toss with the bag juices, or roast for 5 minutes at high heat for color.',
+  opts:[{k:'Asparagus',f:183,a:10,b:15,t:'Bright green and crisp-tender.'},{k:'Corn on the cob',f:183,a:30,b:45,t:'Sweet and juicy, with butter sealed in the bag.'},{k:'Carrots',f:183,a:60,b:90,t:'Tender with intense carrot flavor. Cut into ½-inch sticks.',d:1},{k:'Potatoes',f:183,a:60,b:90,t:'Creamy and evenly cooked. Use 1-inch cubes.'},{k:'Beets',f:183,a:90,b:120,t:'Tender and sweet. Use small whole beets or 1-inch pieces.'}]}
+];
+
+function lerpTable(pts, x){
+  if (x <= pts[0][0]) return pts[0][1];
+  var last = pts[pts.length-1];
+  if (x >= last[0]) return last[1] * Math.pow(x/last[0], 2);
+  for (var i=1;i<pts.length;i++){ if (x <= pts[i][0]){ var a=pts[i-1], b=pts[i]; return a[1] + (b[1]-a[1])*(x-a[0])/(b[0]-a[0]); } }
+}
+function holdMinutes(kind, f){
+  var t = HOLD[kind], keys = Object.keys(t).map(Number).sort(function(a,b){return a-b});
+  if (f >= keys[keys.length-1]) return 0;
+  if (f < keys[0]) { var r = t[keys[0]]/t[keys[1]]; return t[keys[0]] * Math.pow(r, keys[0]-f); }
+  for (var i=1;i<keys.length;i++){ if (f <= keys[i]){ var lo=keys[i-1], hi=keys[i], vl=t[lo], vh=t[hi];
+    if (vh <= 0) return vl * (hi-f)/(hi-lo);
+    return Math.exp(Math.log(vl) + (Math.log(vh)-Math.log(vl))*(f-lo)/(hi-lo)); } }
+  return 0;
+}
+function ceil5(m){ return Math.ceil(m/5)*5; }
+function holdKind(food){ return (food.safety==='poultry'||food.safety==='duck') ? 'poultry' : 'meat'; }
+function needsPastChoice(food){ return ['pork','ground','poultry','duck'].indexOf(food.safety) > -1; }
+function calc(food, opt, mm, frozen, past){
+  var res = {f:opt.f, c:(opt.f-32)*5/9, heat:0, hold:0, min:0, max:0, level:'ok'};
+  if (food.fixed){
+    res.min = opt.a; res.max = opt.b;
+    if (frozen && food.safety==='long'){ res.min += 60; res.max += 60; }
+    res.heat = res.min; return res;
+  }
+  var heat = lerpTable(BALDWIN[food.shape], mm) * (food.safety === 'fish' ? 0.6 : 1) * (frozen ? 1.5 : 1);
+  var hold = 0;
+  if (needsPastChoice(food) && past) hold = holdMinutes(holdKind(food), opt.f - 1);
+  res.heat = heat; res.hold = hold;
+  res.min = ceil5(heat + hold);
+  res.max = ceil5(res.min + food.extra);
+  if (opt.f < 130){
+    if (res.min > 240){ res.level = 'stop'; }
+    res.max = Math.max(res.min, Math.min(res.max, 240));
+  }
+  return res;
+}
+function fmtDur(m){
+  m = Math.round(m);
+  if (m < 60) return m + ' min';
+  var h = Math.floor(m/60), r = m % 60;
+  if (h >= 10 && r === 0) return h + ' h';
+  return r ? h + ' h ' + r + ' min' : h + ' h';
+}
+function fmtRange(a,b){
+  if (a >= 600 && b >= 600) return Math.round(a/60) + '–' + Math.round(b/60) + ' h';
+  if (b < 60) return Math.round(a) + '–' + Math.round(b) + ' min';
+  return fmtDur(a) + ' – ' + fmtDur(b);
+}
+function fmtC(c){ var r = Math.round(c*10)/10; return (r % 1 ? r.toFixed(1) : r.toFixed(0)); }
+function fmtIn(mm){
+  var inch = Math.round(mm/25.4*4)/4, w = Math.floor(inch), fr = inch - w;
+  var s = {0:'',0.25:'¼',0.5:'½',0.75:'¾'}[fr];
+  return (w ? w : (s ? '' : '0')) + s + ' in';
+}
+function defOpt(food){ for (var i=0;i<food.opts.length;i++) if (food.opts[i].d) return i; return 0; }
+/*END*/
+
+(function(){
+  document.documentElement.classList.remove('no-js');
+  var $ = function(id){ return document.getElementById(id); };
+  var store = { get:function(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }, set:function(k,v){ try { localStorage.setItem(k,v); } catch(e){} } };
+  var S = { food: FOODS[0], opt: defOpt(FOODS[0]), mm: FOODS[0].def, frozen:false, past:true, unit: store.get('sv-unit') || 'F', len: store.get('sv-len') || 'in' };
+
+  // food select
+  var sel = $('food'), groups = {};
+  if (!sel.options.length) FOODS.forEach(function(f){
+    if (!groups[f.group]){ groups[f.group] = document.createElement('optgroup'); groups[f.group].label = f.group; sel.appendChild(groups[f.group]); }
+    var o = document.createElement('option'); o.value = f.id; o.textContent = f.name; groups[f.group].appendChild(o);
+  });
+
+  function tempStr(f, unit){ return unit === 'C' ? fmtC((f-32)*5/9) + '°C' : f + '°F'; }
+
+  function setFood(id){
+    S.food = FOODS.filter(function(f){ return f.id === id; })[0];
+    S.opt = defOpt(S.food); S.mm = S.food.def || 25;
+    S.past = S.food.locked ? true : (S.food.past !== undefined ? !!S.food.past : true);
+    buildOpts(); syncThick(); render();
+  }
+  function buildOpts(){
+    var box = $('opts'); box.innerHTML = '';
+    $('optLegend').textContent = S.food.optLabel || 'Doneness';
+    S.food.opts.forEach(function(o, i){
+      var lab = document.createElement('label'); lab.className = 'chip-opt';
+      lab.innerHTML = '<input type="radio" name="opt" id="opt-' + i + '" value="' + i + '"' + (i===S.opt?' checked':'') + '><span>' + o.k + '<small>' + tempStr(o.f, S.unit) + '</small></span>';
+      box.appendChild(lab);
+    });
+  }
+  function syncThick(){
+    var f = S.food, r = $('thick');
+    $('thickField').hidden = !!f.fixed;
+    $('startField').hidden = f.safety==='egg' || f.safety==='veg' || f.safety==='fish' && f.fixed;
+    $('pastField').hidden = f.fixed || !needsPastChoice(f);
+    if (f.fixed) return;
+    if (S.len === 'in'){
+      var lo = Math.max(0.25, Math.round(f.min/25.4*4)/4), hi = Math.round(f.max/25.4*4)/4;
+      r.min = lo; r.max = hi; r.step = 0.25; r.value = Math.min(hi, Math.max(lo, Math.round(S.mm/25.4*4)/4));
+    } else {
+      r.min = f.min; r.max = f.max; r.step = 1; r.value = Math.round(S.mm);
+    }
+    readThick();
+  }
+  function readThick(){
+    var v = parseFloat($('thick').value);
+    S.mm = S.len === 'in' ? v*25.4 : v;
+    $('thickOut').textContent = S.len === 'in' ? fmtIn(S.mm) : Math.round(S.mm) + ' mm';
+    var r = $('thick'); r.style.setProperty('--fill', ((r.value - r.min) / (r.max - r.min) * 100) + '%');
+  }
+  function colorFor(fam, f){
+    var st = COLORS[fam]; if (!st) return '#ccc';
+    if (f <= st[0][0]) return st[0][1];
+    if (f >= st[st.length-1][0]) return st[st.length-1][1];
+    for (var i=1;i<st.length;i++) if (f <= st[i][0]){
+      var a = st[i-1], b = st[i], t = (f-a[0])/(b[0]-a[0]);
+      var pa = [1,3,5].map(function(j){ return parseInt(a[1].substr(j,2),16); }), pb = [1,3,5].map(function(j){ return parseInt(b[1].substr(j,2),16); });
+      return 'rgb(' + pa.map(function(x,k){ return Math.round(x + (pb[k]-x)*t); }).join(',') + ')';
+    }
+  }
+  function clock(d){ return d.toLocaleTimeString([], {hour:'numeric', minute:'2-digit'}); }
+
+  function noteFor(food, opt, res){
+    var hot = tempStr(opt.f, S.unit);
+    if (res.level === 'stop') return ['stop','Too thick for this temperature', 'At ' + hot + ' the center needs more than 4 hours to heat, which is too long below 130°F (54.4°C). Raise the bath to ' + tempStr(131, S.unit) + ' or cut the meat thinner.'];
+    switch(food.safety){
+      case 'whole': return opt.f < 130
+        ? ['warn','Keep the total cook under 4 hours','Whole cuts of beef and lamb carry bacteria mainly on the surface, so searing makes them safe. Below 130°F (54.4°C), don\'t leave the bag in longer than the window shown.']
+        : ['info','Safe for whole cuts','Bacteria on whole beef and lamb sit on the surface, so the bath plus a hard sear makes it safe. USDA recommends 145°F (63°C) for anyone in a high-risk group.'];
+      case 'ground': return S.past
+        ? ['info','Includes a ' + fmtDur(Math.max(1,res.hold)) + ' safety hold','Grinding spreads surface bacteria through the meat. The hold pasteurizes the burger at this temperature, based on USDA FSIS tables.']
+        : ['stop','Ground meat needs the safety hold','Grinding spreads bacteria through the meat. Turn the safety hold back on, or cook to 160°F (71°C).'];
+      case 'pork': return S.past
+        ? ['info', res.hold >= 1 ? 'Includes a ' + fmtDur(res.hold) + ' safety hold' : 'Pasteurized almost instantly at this temperature', 'The hold pasteurizes the center as well as the surface, using USDA FSIS time-temperature tables.']
+        : ['warn','Surface-safe only','Like beef, whole pork is mostly contaminated on the surface, so a sear covers most risk. Turn the hold on for anyone in a high-risk group.'];
+      case 'poultry': return ['info', res.hold >= 1 ? 'Includes a ' + fmtDur(res.hold) + ' safety hold' : 'Pasteurized almost instantly at this temperature', 'Chicken is safe below 165°F (74°C) when held long enough. These holds give a 7-log Salmonella reduction, based on USDA FSIS poultry tables.'];
+      case 'duck': return S.past
+        ? ['info','Includes a ' + fmtDur(res.hold) + ' safety hold','The hold fully pasteurizes the breast at this temperature, based on USDA FSIS poultry tables.']
+        : ['warn','Not pasteurized','Duck breast is usually served medium-rare like steak. It isn\'t pasteurized at this temperature, so turn the hold on for anyone in a high-risk group.'];
+      case 'fish': return opt.f < 130
+        ? ['warn','Fish isn\'t pasteurized at this temperature','Use very fresh fish. For salmon, buy fish that was previously frozen, or freeze it at −4°F (−20°C) for 24 hours first, to kill parasites. Not for pregnant people or anyone with a weakened immune system.']
+        : ['info','Cook fish briefly','Fish turns soft if it sits in the bath too long, so serve it within the window shown.'];
+      case 'egg': return opt.f === 135
+        ? ['info','Pasteurized in the shell','Holding eggs at 135°F (57°C) for 75 minutes pasteurizes them while they still look raw. Cool them in ice water and refrigerate.']
+        : ['info','Cook straight from the fridge','Lower the eggs in gently with a spoon. Times are for large eggs.'];
+      case 'veg': return ['info','Use a hotter bath for vegetables','Vegetables need 183°F (84°C) to soften. Check that your bags are rated for this temperature.'];
+      case 'long': return ['info','Long cook, fully pasteurized','At these times the meat is pasteurized all the way through. Check the water level now and then and cover the pot to slow evaporation.'];
+    }
+    return ['info','',''];
+  }
+
+  function render(){
+    var food = S.food, opt = food.opts[S.opt];
+    var res = calc(food, opt, S.mm, S.frozen, S.past);
+    var other = S.unit === 'F' ? 'C' : 'F';
+    $('rTemp').textContent = tempStr(opt.f, S.unit);
+    $('rTemp2').textContent = tempStr(opt.f, other);
+    if (res.level === 'stop'){ $('rTime').innerHTML = 'Not advised'; $('rTimeSub').textContent = 'Needs over 4 hours to heat through'; }
+    else { $('rTime').textContent = res.min >= 600 ? fmtRange(res.min, res.max) : fmtDur(res.min); $('rTimeSub').textContent = res.min >= 600 ? 'Ready any time in this range' : 'and up to ' + fmtDur(res.max) + ' in the bath'; }
+
+    var hold = food.fixed ? 0 : (res.hold > 0 ? Math.max(1, Math.round(res.hold)) : 0);
+    if (res.hold > 0 && res.hold < 0.5) hold = 0;
+    var heat = res.min - hold, ready = Math.max(res.max - res.min, 0);
+    $('bHeat').style.flexGrow = heat; $('bHold').style.flexGrow = hold; $('bReady').style.flexGrow = Math.max(ready,0);
+    var lg = '';
+    lg += '<span><i style="background:var(--seg-heat)"></i>' + (food.fixed ? 'Cook' : 'Heat through') + ' <b>' + fmtDur(heat) + '</b></span>';
+    if (hold > 0) lg += '<span><i style="background:var(--seg-hold)"></i>Safety hold <b>' + fmtDur(hold) + '</b></span>';
+    lg += '<span><i style="background:var(--seg-ready)"></i>Ready window <b>' + fmtDur(Math.max(ready,0)) + '</b></span>';
+    $('legend').innerHTML = lg;
+
+    var tx = $('texture');
+    tx.classList.toggle('noimg', !!food.noimg);
+    if (!food.noimg){
+      $('xsec').setAttribute('fill', colorFor(food.fam, opt.f));
+      $('marb').style.display = food.fam === 'beef' ? '' : 'none';
+    }
+    $('rDone').textContent = opt.k;
+    $('rTex').textContent = opt.t;
+
+    var n = noteFor(food, opt, res), note = $('rNote');
+    note.className = 'note ' + n[0]; note.innerHTML = '<strong>' + n[1] + '</strong>' + n[2];
+    $('rFinish').innerHTML = '<b>To finish:</b> ' + food.finish;
+
+    var st = $('startAt').value;
+    if (st && res.level !== 'stop'){
+      var p = st.split(':'), d0 = new Date(); d0.setHours(+p[0], +p[1], 0, 0);
+      var a = new Date(d0.getTime() + res.min*60000), b = new Date(d0.getTime() + res.max*60000);
+      var dayNote = (b.getDate() !== d0.getDate()) ? ' (' + Math.round((b - d0)/86400000) + ' day' + (Math.round((b-d0)/86400000) === 1 ? '' : 's') + ' later)' : '';
+      $('rPlan').textContent = res.max >= 1440 ? 'Ready ' + a.toLocaleDateString([], {weekday:'short'}) + ' ' + clock(a) + ' to ' + b.toLocaleDateString([], {weekday:'short'}) + ' ' + clock(b) : 'Ready from ' + clock(a) + ', best served by ' + clock(b) + dayNote;
+    } else $('rPlan').textContent = '';
+
+    $('pTemp').textContent = tempStr(opt.f, S.unit);
+    $('pTime').textContent = res.level === 'stop' ? 'Not advised' : (res.min >= 600 ? fmtRange(res.min, res.max) : fmtDur(res.min));
+    $('pFood').textContent = food.name.replace(/ \(.*\)/, '') + ', ' + opt.k.toLowerCase() + (res.level === 'stop' || res.min >= 600 ? '' : ' · up to ' + fmtDur(res.max));
+    $('pastHint').textContent = food.locked ? 'Always on for poultry, so it\'s safe below 165°F.' : (food.safety === 'ground' ? 'Strongly recommended for ground meat.' : 'Adds time so the center is pasteurized, not just the surface.');
+    $('past').checked = S.past; $('past').disabled = !!food.locked;
+
+    S.lastText = food.name + ', ' + opt.k.toLowerCase() + (food.fixed ? '' : ', ' + (S.len==='in' ? fmtIn(S.mm) : Math.round(S.mm)+' mm') + (S.frozen ? ', from frozen' : '')) + ': set the bath to ' + tempStr(opt.f,'F') + ' (' + tempStr(opt.f,'C') + ') and cook ' + (res.level==='stop' ? '(not advised at this thickness)' : fmtDur(res.min) + ' to ' + fmtDur(res.max)) + '. Sous Vide Calculator by OWKAR: https://bryantdeleon.github.io/sous-vide-calculator/';
+  }
+
+  sel.addEventListener('change', function(){ setFood(sel.value); });
+  $('opts').addEventListener('change', function(e){ S.opt = +e.target.value; render(); });
+  $('thick').addEventListener('input', function(){ readThick(); render(); });
+  $('past').addEventListener('change', function(e){ S.past = e.target.checked; render(); });
+  $('startAt').addEventListener('input', render);
+  document.querySelectorAll('[data-frozen]').forEach(function(b){ b.addEventListener('click', function(){
+    S.frozen = b.dataset.frozen === '1';
+    document.querySelectorAll('[data-frozen]').forEach(function(x){ x.setAttribute('aria-pressed', String(x === b)); }); render(); }); });
+  document.querySelectorAll('[data-unit]').forEach(function(b){ b.addEventListener('click', function(){
+    S.unit = b.dataset.unit; store.set('sv-unit', S.unit); setUnitBtns(); buildOpts(); render(); }); });
+  document.querySelectorAll('[data-len]').forEach(function(b){ b.addEventListener('click', function(){
+    S.len = b.dataset.len; store.set('sv-len', S.len); setUnitBtns(); syncThick(); render(); }); });
+  function setUnitBtns(){
+    document.querySelectorAll('[data-unit]').forEach(function(x){ x.setAttribute('aria-pressed', String(x.dataset.unit === S.unit)); });
+    document.querySelectorAll('[data-len]').forEach(function(x){ x.setAttribute('aria-pressed', String(x.dataset.len === S.len)); });
+  }
+  document.getElementById('form').addEventListener('submit', function(e){ e.preventDefault(); });
+
+  function toast(msg){ var t = $('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(function(){ t.classList.remove('show'); }, 1800); }
+  function copy(text, fallbackEl){
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(function(){ toast('Copied'); }, function(){ fallback(); });
+    } else fallback();
+    function fallback(){ if (fallbackEl){ fallbackEl.focus(); fallbackEl.select(); toast('Press Ctrl+C or ⌘C to copy'); } }
+  }
+  $('copyBtn').addEventListener('click', function(){ copy(S.lastText); });
+  var base = 'https://bryantdeleon.github.io/sous-vide-calculator/';
+  $('embedCode').textContent = '<iframe src="' + base + '" title="Sous Vide Time and Temperature Calculator" width="100%" height="900" style="border:0;max-width:1160px" loading="lazy"></iframe>\n<p style="font-size:13px">Free <a href="https://owkar.com/pages/sous-vide-vacuum-sealer">sous vide calculator by OWKAR</a></p>';
+  $('copyEmbed').addEventListener('click', function(){ copy($('embedCode').value, $('embedCode')); });
+  $('year').textContent = new Date().getFullYear();
+
+  // mobile: show a result bar while the result panel is off screen
+  if ('IntersectionObserver' in window){
+    var vis = {calc:false, res:false}, peek = $('peek');
+    var upd = function(){ var on = vis.calc && !vis.res; peek.classList.toggle('show', on); peek.setAttribute('aria-hidden', String(!on)); };
+    new IntersectionObserver(function(es){ es.forEach(function(e){ vis[e.target.id === 'result' ? 'res' : 'calc'] = e.isIntersecting; }); upd(); }, {threshold:0.12}).observe($('form'));
+    new IntersectionObserver(function(es){ vis.res = es[0].isIntersecting; upd(); }, {threshold:0.25}).observe($('result'));
+  }
+
+  // default start time: next quarter hour
+  var now = new Date(); now.setMinutes(Math.ceil((now.getMinutes()+1)/15)*15, 0, 0);
+  $('startAt').value = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+
+  // hash deep link to a food, e.g. #chicken -> not needed; plain #food-id supported
+  var h = location.hash.replace('#','');
+  var start = FOODS.some(function(f){ return f.id === h; }) ? h : 'steak';
+  sel.value = start; setUnitBtns(); setFood(start);
+})();
+</script>
+
+
+</body></html>
